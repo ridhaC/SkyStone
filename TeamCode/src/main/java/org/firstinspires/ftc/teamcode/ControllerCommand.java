@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+
 public abstract class ControllerCommand {
     boolean buttonDown = false;
     actionable type;
     public static enum actionable {
             onPress, whileDown, onRelease
     }
+    public static ArrayList<ControllerCommand> allControllerCommands = new ArrayList<>();
     public ControllerCommand(actionable type) {
         this.type = type;
     }
@@ -48,6 +52,5 @@ public abstract class ControllerCommand {
         }
         return buttonDown;
     }
-
     public abstract void defineOperation();
 }

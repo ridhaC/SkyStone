@@ -40,21 +40,14 @@ public class RobotHardware {
             (WHEEL_DIAMETER_INCHES * 3.1415);
 
     //clamp servo
-    private Servo insideClampServo;
-    private Servo outsideClampServo;
-        double outsideclampStartingPosition = 0.2;
-        double outsideClampClosedPosition = 0.49;
-        double outsideClampOpenPosition = 1.0;
-        double insideClampClosedPosition = 0.51;
-        double insideClampOpenPosition = 0.15;
+    private Servo clampServo;
+        double clampClosedPosition = 0.49;
+        double clampOpenPosition = 1.0;
 
     //foundation hook servos
-    private Servo foundationHookRight;
-    private Servo foundationHookLeft;
-        double leftHookClosedPosition = 0.99;
-        double leftHookOpenPosition = 0.35;
-        double rightHookOpenPosition = 0.87;
-        double rightHookClosedPosition = 0.0;
+    private Servo foundationHook;
+        double hookClosedPosition = 0.85;
+        double hookOpenPosition = 0.40;
 
     public RobotHardware() {
 
@@ -118,15 +111,11 @@ public class RobotHardware {
             imu.initialize(parameters);
 
             //servos
-            outsideClampServo = hMap.get(Servo.class, "outside_clamp");
-            insideClampServo = hMap.get(Servo.class, "inside_clamp");
+            clampServo = hMap.get(Servo.class, "clamp");
                 //outsideClampServo.setPosition(outsideclampStartingPosition);
-                //insideClampServo.setPosition(insideClampOpenPosition);
 
-            foundationHookRight = hMap.get(Servo.class, "hook_right");
-            foundationHookLeft = hMap.get(Servo.class, "hook_left");
-                foundationHookLeft.setPosition(leftHookOpenPosition);
-                foundationHookRight.setPosition(rightHookOpenPosition);
+            foundationHook = hMap.get(Servo.class, "hook");
+                foundationHook.setPosition(hookOpenPosition);
 
         } catch (NullPointerException e) {
             //drives couldn't initialize.. let the program run anyway
@@ -391,51 +380,43 @@ public class RobotHardware {
         return isMotorBusy(frontLeftDrive) || isMotorBusy(frontRightDrive) || isMotorBusy(backLeftDrive) || isMotorBusy(backRightDrive);
     }
 
-    public static int clamp = 0;
+    public boolean clamped = false;
     public void toggleClamp() {
-        switch (clamp) {
-            case 0:
-            outsideClampServo.setPosition(outsideClampOpenPosition);
-            insideClampServo.setPosition(insideClampClosedPosition);
-            break;
-            case 1:
-            outsideClampServo.setPosition(outsideClampClosedPosition);
-            insideClampServo.setPosition(insideClampClosedPosition);
-            break;
-            //case 2:
-            //outsideClampServo.setPosition(outsideClampOpenPosition);
-            //insideClampServo.setPosition(insideClampOpenPosition);
-            //break;
-        }
-        clamp++;
-        clamp %= 2;
+        if(clamped)
+            openClamp();
+        else
+            closeClamp();
+        clamped = !clamped;
     }
 
-    public void compactClamp()  {
-        clamp = 0;
-        outsideClampServo.setPosition(outsideclampStartingPosition);
-        insideClampServo.setPosition(insideClampOpenPosition);
+    public void closeClamp()    {
+        clampServo.setPosition(clampClosedPosition);
+        clamped = true;
     }
+
+    public void openClamp()    {
+        clampServo.setPosition(clampOpenPosition);
+        clamped = false;
+    }
+
 
     boolean hook = false;
     public void toggleHook() {
-        if(!hook) {
+        if(!hook)
             lowerHook();
-        }
-        else {
+        else
             raiseHook();
-        }
         hook=!hook;
     }
 
     public void lowerHook() {
-        foundationHookRight.setPosition(rightHookClosedPosition);
-        foundationHookLeft.setPosition(leftHookClosedPosition);
+        foundationHook.setPosition(hookClosedPosition);
+        hook = true;
     }
 
     public void raiseHook() {
-        foundationHookRight.setPosition(rightHookOpenPosition);
-        foundationHookLeft.setPosition(leftHookOpenPosition);
+        foundationHook.setPosition(hookOpenPosition);
+        hook = false;
     }
 
     public boolean isHookDown() {
