@@ -163,6 +163,18 @@ public class RobotHardware {
         return distanceSensor.getDistance(DistanceUnit.CM);
     }
 
+    public double getAccelerationX()    {
+        return imu.getAcceleration().xAccel;
+    }
+
+    public double getAccelerationY()    {
+        return imu.getAcceleration().yAccel;
+    }
+
+    public double getAccelerationZ()    {
+        return imu.getAcceleration().zAccel;
+    }
+
     double movementSpeed = 0.7;
     public void driveWheels(double lfPower, double rfPower, double lbPower, double rbPower) {
         frontLeftDrive.setPower(lfPower);
