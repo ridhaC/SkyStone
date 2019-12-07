@@ -40,14 +40,18 @@ public class RobotHardware {
             (WHEEL_DIAMETER_INCHES * 3.1415);
 
     //clamp servo
-    private Servo clampServo;
-        double clampClosedPosition = 0.49;
-        double clampOpenPosition = 1.0;
+    private Servo insideClampServo;
+    private Servo outsideClampServo;
+    double outsideclampStartingPosition = 0.2;
+    double outsideClampClosedPosition = 0.49;
+    double outsideClampOpenPosition = 1.0;
+    double insideClampClosedPosition = 0.51;
+    double insideClampOpenPosition = 0.15;
 
     //foundation hook servos
     private Servo foundationHook;
-        double hookClosedPosition = 0.85;
-        double hookOpenPosition = 0.40;
+    double hookClosedPosition = 0.85;
+    double hookOpenPosition = 0.40;
 
     public RobotHardware() {
 
@@ -111,11 +115,13 @@ public class RobotHardware {
             imu.initialize(parameters);
 
             //servos
-            clampServo = hMap.get(Servo.class, "clamp");
-                //outsideClampServo.setPosition(outsideclampStartingPosition);
+            outsideClampServo = hMap.get(Servo.class, "outside_clamp");
+            insideClampServo = hMap.get(Servo.class, "inside_clamp");
+            //outsideClampServo.setPosition(outsideclampStartingPosition);
+            //insideClampServo.setPosition(insideClampOpenPosition);
 
             foundationHook = hMap.get(Servo.class, "hook");
-                foundationHook.setPosition(hookOpenPosition);
+            foundationHook.setPosition(hookOpenPosition);
 
         } catch (NullPointerException e) {
             //drives couldn't initialize.. let the program run anyway
@@ -145,11 +151,11 @@ public class RobotHardware {
             return false;
         return true;
     }
-        public double yellowRatio() {
-            int redGreenAverage = (getRed()+getGreen())/2;
-            double ratio = redGreenAverage/(double)getBlue();
-            return ratio;
-        }
+    public double yellowRatio() {
+        int redGreenAverage = (getRed()+getGreen())/2;
+        double ratio = redGreenAverage/(double)getBlue();
+        return ratio;
+    }
 
     public double getDistance() {
         if (distanceSensor == null)
@@ -297,41 +303,41 @@ public class RobotHardware {
         }
         return turnFinished;
     }
-        double accuracyThreshold = 5;
-        public boolean isTurnBusy() {
-            if (Math.abs(targetAngle)-Math.abs(getAngle())<accuracyThreshold)
-                return false;
-            return true;
-        }
+    double accuracyThreshold = 5;
+    public boolean isTurnBusy() {
+        if (Math.abs(targetAngle)-Math.abs(getAngle())<accuracyThreshold)
+            return false;
+        return true;
+    }
 
-        public double getAngle()    {
-            // We experimentally determined the Z axis is the axis we want to use for heading angle.
-            // We have to process the angle because the imu works in euler angles so the Z axis is
-            // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
-            // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+    public double getAngle()    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-            Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-            double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
-            if (deltaAngle < -180)
-                deltaAngle += 360;
-            else if (deltaAngle > 180)
-                deltaAngle -= 360;
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
 
-            globalAngle += deltaAngle;
+        globalAngle += deltaAngle;
 
-            lastAngles = angles;
+        lastAngles = angles;
 
-            return globalAngle;
-        }
-        private void resetAngle() {
-            lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return globalAngle;
+    }
+    private void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-            globalAngle = 0;
-        }
+        globalAngle = 0;
+    }
 
-        public void stopWheels() {
+    public void stopWheels() {
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
         backLeftDrive.setPower(0);
@@ -380,43 +386,50 @@ public class RobotHardware {
         return isMotorBusy(frontLeftDrive) || isMotorBusy(frontRightDrive) || isMotorBusy(backLeftDrive) || isMotorBusy(backRightDrive);
     }
 
-    public boolean clamped = false;
+    public static int clamp = 0;
     public void toggleClamp() {
-        if(clamped)
-            openClamp();
-        else
-            closeClamp();
-        clamped = !clamped;
+        switch (clamp) {
+            case 0:
+                outsideClampServo.setPosition(outsideClampOpenPosition);
+                insideClampServo.setPosition(insideClampClosedPosition);
+                break;
+            case 1:
+                outsideClampServo.setPosition(outsideClampClosedPosition);
+                insideClampServo.setPosition(insideClampClosedPosition);
+                break;
+            //case 2:
+            //outsideClampServo.setPosition(outsideClampOpenPosition);
+            //insideClampServo.setPosition(insideClampOpenPosition);
+            //break;
+        }
+        clamp++;
+        clamp %= 2;
     }
 
-    public void closeClamp()    {
-        clampServo.setPosition(clampClosedPosition);
-        clamped = true;
+    public void compactClamp()  {
+        clamp = 0;
+        outsideClampServo.setPosition(outsideclampStartingPosition);
+        insideClampServo.setPosition(insideClampOpenPosition);
     }
-
-    public void openClamp()    {
-        clampServo.setPosition(clampOpenPosition);
-        clamped = false;
-    }
-
 
     boolean hook = false;
     public void toggleHook() {
-        if(!hook)
+        if(!hook) {
             lowerHook();
-        else
+        }
+        else {
             raiseHook();
+        }
         hook=!hook;
     }
 
+
     public void lowerHook() {
         foundationHook.setPosition(hookClosedPosition);
-        hook = true;
     }
 
     public void raiseHook() {
         foundationHook.setPosition(hookOpenPosition);
-        hook = false;
     }
 
     public boolean isHookDown() {
@@ -428,4 +441,3 @@ public class RobotHardware {
 
     }
 }
-

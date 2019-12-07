@@ -14,9 +14,8 @@ public class TeleOpMode extends LinearOpMode {
 
     }
 
-    private double fastSpeed = 0.9;
-    private double slowSpeed = 0.5;
-    private double movementSpeed = fastSpeed;
+    private double fastMovementSpeed = 0.9, slowMovementSpeed = 0.6, movementSpeed = fastMovementSpeed;
+
     @Override
     public void runOpMode() {
         hardware = new RobotHardware();
@@ -50,14 +49,19 @@ public class TeleOpMode extends LinearOpMode {
         ControllerCommand driveSpeedSlow = new ControllerCommand(ControllerCommand.actionable.onRelease) {
             @Override
             public void defineOperation() {
-                movementSpeed = fastSpeed;
+                movementSpeed = fastMovementSpeed;
             }
         };
         ControllerCommand driveSpeedFast = new ControllerCommand(ControllerCommand.actionable.onPress) {
             public void defineOperation() {
-                movementSpeed = slowSpeed;
+                movementSpeed = slowMovementSpeed;
             }
         };
+
+        ControllerCommand compactClampCommand= new ControllerCommand(ControllerCommand.actionable.onPress) {
+            public void defineOperation() {hardware.compactClamp();}
+        };
+
         long last = System.currentTimeMillis();
         //looping condition.. while teleop mode is active.. obvious
         while (opModeIsActive()) {
@@ -82,14 +86,17 @@ public class TeleOpMode extends LinearOpMode {
             telemetry.addData("Skystone", hardware.nextToSkystone());
             telemetry.addData("Yellow Ratio", hardware.yellowRatio());
             telemetry.addData("Angle ", hardware.getAngle());
+            telemetry.addData("stage", RobotHardware.clamp);
             long now = System.currentTimeMillis();
             telemetry.addData("DT (ms)",now-last);
             last = now;
             clampCommand.operate(gamepad1.b);
             hookCommand.operate(gamepad1.y);
             rackSpoolSpeedToggleCommand.operate(gamepad1.x);
+            compactClampCommand.operate(gamepad1.a);
             driveSpeedSlow.operate(gamepad1.left_stick_button);
             driveSpeedFast.operate(gamepad1.left_stick_button);
+
             telemetry.update();
         }
         //after teleop is stopped

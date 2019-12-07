@@ -19,6 +19,7 @@ public class AutonomousOpMode extends LinearOpMode {
     }
 
     private OperationQueue opQueue;
+    private int opInt;
     float delayTime = 1.0f;
 
     ControllerCommand delayIncrement = new ControllerCommand(ControllerCommand.actionable.onPress) {
@@ -31,50 +32,68 @@ public class AutonomousOpMode extends LinearOpMode {
     };
     ControllerCommand blueFoundation = new ControllerCommand(ControllerCommand.actionable.onPress) {
         @Override
-        public void defineOperation() {opQueue = AutonomousQueues.START_BLUE_FOUNDATION;}
+        public void defineOperation() {opInt = AutonomousQueues.BLUE_FOUNDATION_INT;}
     };
     ControllerCommand blueStones = new ControllerCommand(ControllerCommand.actionable.onPress) {
         @Override
-        public void defineOperation() {opQueue = AutonomousQueues.START_BLUE_STONES;}
+        public void defineOperation() {opInt = AutonomousQueues.BLUE_STONES_INT;}
     };
     ControllerCommand redFoundation = new ControllerCommand(ControllerCommand.actionable.onPress) {
         @Override
-        public void defineOperation() {opQueue = AutonomousQueues.START_RED_FOUNDATION;}
+        public void defineOperation() {opInt = AutonomousQueues.RED_FOUNDATION_INT;}
     };
     ControllerCommand redStones = new ControllerCommand(ControllerCommand.actionable.onPress) {
         @Override
-        public void defineOperation() {opQueue = AutonomousQueues.START_RED_STONES;}
+        public void defineOperation() {opInt = AutonomousQueues.RED_STONES_INT;}
     };
     public void runOpMode() {
         robot = new RobotHardware();
         robot.init(this.hardwareMap);
 
-        AutonomousQueues.initiate(robot, delayTime);
-        opQueue = AutonomousQueues.START_BLUE_FOUNDATION;
+        opInt = AutonomousQueues.BLUE_FOUNDATION_INT;
         
         telemetry.addData("Status","Initialized");
         telemetry.update();
 
         while (!gamepad1.start) {
-            blueFoundation.defineOperation();
-            blueStones.defineOperation();
-            redFoundation.defineOperation();
-            redStones.defineOperation();
-            delayDecrement.defineOperation();
-            delayIncrement.defineOperation();
+            blueFoundation.operate(gamepad1.y);
+            blueStones.operate(gamepad1.b);
+            redFoundation.operate(gamepad1.a);
+            redStones.operate(gamepad1.x);
+            delayDecrement.operate(gamepad1.dpad_down);
+            delayIncrement.operate(gamepad1.dpad_up);
 
-            if (opQueue == AutonomousQueues.START_BLUE_FOUNDATION)
+            if (opInt == AutonomousQueues.BLUE_FOUNDATION_INT)
                 telemetry.addData("Position","BLUE FOUNDATION");
-            else if (opQueue == AutonomousQueues.START_RED_FOUNDATION)
+            else if (opInt == AutonomousQueues.RED_FOUNDATION_INT)
                 telemetry.addData("Position","RED FOUNDATION");
-            else if  (opQueue == AutonomousQueues.START_BLUE_STONES)
+            else if  (opInt == AutonomousQueues.BLUE_STONES_INT)
                 telemetry.addData("Position","BLUE STONES");
             else
                 telemetry.addData("Position","RED STONES");
             telemetry.addData("Delay", delayTime);
             telemetry.update();
         }
-        opQueue = AutonomousQueues.START_BLUE_FOUNDATION;
+
+        AutonomousQueues.initiate(robot, delayTime);
+
+        switch(opInt)   {
+            case AutonomousQueues.BLUE_FOUNDATION_INT:
+                opQueue = AutonomousQueues.START_BLUE_FOUNDATION;
+                break;
+            case AutonomousQueues.BLUE_STONES_INT:
+                opQueue = AutonomousQueues.START_BLUE_STONES;
+                break;
+
+            case AutonomousQueues.RED_FOUNDATION_INT:
+                opQueue = AutonomousQueues.START_RED_FOUNDATION;
+                break;
+
+            case AutonomousQueues.RED_STONES_INT:
+                opQueue = AutonomousQueues.START_RED_STONES;
+                break;
+        }
+
         waitForStart();
         while (opModeIsActive()) {
             boolean t = opQueue.operate();

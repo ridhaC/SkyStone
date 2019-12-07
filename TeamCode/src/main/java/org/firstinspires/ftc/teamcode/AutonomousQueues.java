@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutonomousQueues {
-    public static int BLUE_STONES_INT = 0, RED_STONES_INT = 1, BLUE_FOUNDATION_INT = 2, RED_FOUNDATION = 3;
+    public static final int BLUE_STONES_INT = 0, RED_STONES_INT = 1, BLUE_FOUNDATION_INT = 2, RED_FOUNDATION_INT = 3;
     public static OperationQueue START_BLUE_STONES, START_RED_STONES, START_BLUE_FOUNDATION, START_RED_FOUNDATION;
-
     /**
      * This should be called at the beginning of the AutonomousOpMode
      */
@@ -14,7 +13,7 @@ public class AutonomousQueues {
         List<Operation> allStartingOps = new ArrayList<Operation>();
         allStartingOps.add(new Operation("Prep servos",delayTime) {
             public boolean defineOperation() {
-                this.getRobot().closeClamp();
+                this.getRobot().compactClamp();
                 return true;
             }
         });
@@ -108,7 +107,6 @@ public class AutonomousQueues {
         START_BLUE_STONES=addOperations(START_BLUE_STONES, deployClamp);
         START_BLUE_STONES=addOperations(START_BLUE_STONES, ops);
         ops.clear();
-
         /**
          * Implementation for start position at the red stones
          */
