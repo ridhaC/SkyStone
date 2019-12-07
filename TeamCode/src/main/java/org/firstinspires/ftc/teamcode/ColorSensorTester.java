@@ -52,8 +52,8 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@TeleOp(name = "Sensor Tester", group = "Sensor")
-//@Disabled                            // Comment this out to add to the opmode list
+@TeleOp(name = "Color Sensor Data Collection", group = "Sensor")
+//@Disabled  // Comment this out to add to the opmode list
 public class ColorSensorTester extends LinearOpMode {
 
     /**
@@ -85,17 +85,35 @@ public class ColorSensorTester extends LinearOpMode {
      * to the target object.
      *
      */
-    ColorSensor sensorColor;
-    DistanceSensor sensorDistance;
+//    ColorSensor sensorColor;
+//    DistanceSensor sensorDistance;
+
+    RobotHardware hardware;
 
     @Override
     public void runOpMode() {
+        hardware = new RobotHardware();
+        hardware.init(this.hardwareMap);
 
+        telemetry.addData("Status","Initialized");
+        telemetry.update();
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            telemetry.addData("red",hardware.getRed());
+            telemetry.addData("green",hardware.getGreen());
+            telemetry.addData("blue",hardware.getBlue());
+            telemetry.addData("distance",hardware.getDistance());
+            telemetry.update();
+        }
+
+        /*
         // get a reference to the color sensor.
-        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        sensorColor = hardwareMap.get(ColorSensor.class, "color");
 
         // get a reference to the distance sensor that shares the same name.
-        sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "color");
 
         // hsvValues is an array that will hold the hue, saturation, and value information.
         float hsvValues[] = {0F, 0F, 0F};
@@ -111,7 +129,6 @@ public class ColorSensorTester extends LinearOpMode {
         // color of the Robot Controller app to match the hue detected by the RGB sensor.
         int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
         final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-        String print = "stone";
         // wait for the start button to be pressed.
         waitForStart();
 
@@ -134,12 +151,6 @@ public class ColorSensorTester extends LinearOpMode {
             telemetry.addData("Green", sensorColor.green());
             telemetry.addData("Blue ", sensorColor.blue());
             telemetry.addData("Hue", hsvValues[0]);
-            if(sensorColor.red()>40)
-                print = "stone";
-            else
-                print = "skystone";
-            telemetry.addData("The stone is ", print);
-
 
             // change the background color to match the color detected by the RGB sensor.
             // pass a reference to the hue, saturation, and value array as an argument
@@ -159,5 +170,6 @@ public class ColorSensorTester extends LinearOpMode {
                 relativeLayout.setBackgroundColor(Color.WHITE);
             }
         });
+        */
     }
 }
