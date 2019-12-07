@@ -11,7 +11,7 @@ public class AutonomousQueues {
      */
     public static void initiate(RobotHardware robot, float delayTime) {
         List<Operation> allStartingOps = new ArrayList<Operation>();
-        allStartingOps.add(new Operation("Prep servos",delayTime) {
+        allStartingOps.add(new Operation("prep servos",delayTime) {
             public boolean defineOperation() {
                 this.getRobot().compactClamp();
                 return true;
@@ -19,45 +19,50 @@ public class AutonomousQueues {
         });
 
         List<Operation> deployClamp = new ArrayList<Operation>();
-        deployClamp.add(new Operation("Lift rack",2.0f) {
+        deployClamp.add(new Operation("lift rack",0.5f) {
             public boolean defineOperation() {
-                this.getRobot().driveRack(0.7);
+                this.getRobot().driveRack(0.5);
                 return true;
             }
         });
-        deployClamp.add(new Operation("Extrude slide",2.0f) {
+        deployClamp.add(new Operation("extrude slide",2.0f) {
             public boolean defineOperation() {
                 this.getRobot().driveSpool(0.7);
                 return true;
             }
         });
-        deployClamp.add(new Operation("Lower rack",2.0f) {
-            public boolean defineOperation() {
-                this.getRobot().driveRack(-0.7);
-                return true;
-            }
-        });
-        deployClamp.add(new Operation("Toggle clamp",0.5f) {
+        deployClamp.add(new Operation("toggle clamp",0.5f) {
             public boolean defineOperation() {
                 this.getRobot().toggleClamp();
                 return true;
             }
         });
-
+        deployClamp.add(new Operation("lower rack",0.7f) {
+            public boolean defineOperation() {
+                this.getRobot().driveRack(-0.5);
+                return true;
+            }
+        });
         List<Operation> ops = new ArrayList<Operation>();
         /**
          * Implementation for start position at the blue stones
          */
         START_BLUE_STONES = new OperationQueue(robot);
-        ops.add(new Operation("Move to stones",1.2f) {
+        ops.add(new Operation("line up with wall", 0.5f)    {
+           public boolean defineOperation() {
+               this.getRobot().driveRight(0.5);
+               return Math.abs(this.getRobot().getAccelerationX())>0.5;
+           }
+        });
+        ops.add(new Operation("mmve to stones",1.2f) {
             public boolean defineOperation() {
-                this.getRobot().driveForward(0.35);
-                return true;
+                this.getRobot().driveForward(0.2);
+                return this.getRobot().getDistance()>3.6;
             }
         });
         ops.add(new Operation("search for stones", 7.0f) {
             public boolean defineOperation() {
-                this.getRobot().driveLeft(0.9);
+                this.getRobot().driveLeft(0.5);
                 return !this.getRobot().nextToSkystone();
             }
         });
@@ -104,7 +109,7 @@ public class AutonomousQueues {
             }
         });
         START_BLUE_STONES=addOperations(START_BLUE_STONES, allStartingOps);
-        START_BLUE_STONES=addOperations(START_BLUE_STONES, deployClamp);
+        //START_BLUE_STONES=addOperations(START_BLUE_STONES, deployClamp);
         START_BLUE_STONES=addOperations(START_BLUE_STONES, ops);
         ops.clear();
         /**
@@ -166,7 +171,7 @@ public class AutonomousQueues {
             }
         });
         START_RED_STONES=addOperations(START_RED_STONES, allStartingOps);
-        START_RED_STONES=addOperations(START_RED_STONES, deployClamp);
+        //START_RED_STONES=addOperations(START_RED_STONES, deployClamp);
         START_RED_STONES=addOperations(START_RED_STONES, ops);
         ops.clear();
 
