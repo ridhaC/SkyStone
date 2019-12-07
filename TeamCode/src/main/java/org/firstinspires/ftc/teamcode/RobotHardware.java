@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -12,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class RobotHardware {
     //encourage data encapsulation
@@ -102,17 +105,20 @@ public class RobotHardware {
             colorSensor = hMap.get(ColorSensor.class,"color_sensor");
             distanceSensor = hMap.get(DistanceSensor.class,"color_sensor");
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-
-            parameters.mode                = BNO055IMU.SensorMode.IMU;
             parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
             parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-            parameters.loggingEnabled      = false;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
             // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
             // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
             // and named "imu".
             imu = hMap.get(BNO055IMU.class, "imu");
             imu.initialize(parameters);
+
+            imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
             //servos
             outsideClampServo = hMap.get(Servo.class, "outside_clamp");
@@ -164,15 +170,15 @@ public class RobotHardware {
     }
 
     public double getAccelerationX()    {
-        return imu.getAcceleration().xAccel;
+        return imu.getVelocity().xVeloc;
     }
 
     public double getAccelerationY()    {
-        return imu.getAcceleration().yAccel;
+        return imu.getVelocity().yVeloc;
     }
 
     public double getAccelerationZ()    {
-        return imu.getAcceleration().zAccel;
+        return imu.getVelocity().zVeloc;
     }
 
     double movementSpeed = 0.7;
