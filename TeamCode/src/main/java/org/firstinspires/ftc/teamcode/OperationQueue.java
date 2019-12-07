@@ -27,6 +27,11 @@ public class OperationQueue {
         queue.add(operation);
     }
 
+    public void add(List<Operation> operations) {
+        for (Operation o : operations)
+            add(o);
+    }
+
     /**
      * Returns true if the queue is still operating
      * @return

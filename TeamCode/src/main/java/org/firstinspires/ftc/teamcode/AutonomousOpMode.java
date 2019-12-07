@@ -55,7 +55,9 @@ public class AutonomousOpMode extends LinearOpMode {
         telemetry.addData("Status","Initialized");
         telemetry.update();
 
-        while (!gamepad1.start) {
+        String pos = "BLUE FOUNDATION";
+
+        while (!gamepad1.back) {
             blueFoundation.operate(gamepad1.y);
             blueStones.operate(gamepad1.b);
             redFoundation.operate(gamepad1.a);
@@ -63,17 +65,34 @@ public class AutonomousOpMode extends LinearOpMode {
             delayDecrement.operate(gamepad1.dpad_down);
             delayIncrement.operate(gamepad1.dpad_up);
 
-            if (opInt == AutonomousQueues.BLUE_FOUNDATION_INT)
-                telemetry.addData("Position","BLUE FOUNDATION");
-            else if (opInt == AutonomousQueues.RED_FOUNDATION_INT)
-                telemetry.addData("Position","RED FOUNDATION");
-            else if  (opInt == AutonomousQueues.BLUE_STONES_INT)
-                telemetry.addData("Position","BLUE STONES");
-            else
-                telemetry.addData("Position","RED STONES");
+            switch (opInt) {
+                case AutonomousQueues.BLUE_FOUNDATION_INT:
+                    pos = "BLUE FOUNDATION";
+                    break;
+                case AutonomousQueues.RED_FOUNDATION_INT:
+                    pos = "RED FOUNDATION";
+                    break;
+                case AutonomousQueues.BLUE_STONES_INT:
+                    pos = "BLUE STONES";
+                    break;
+                case AutonomousQueues.RED_STONES_INT:
+                    pos = "RED STONES";
+                    break;
+            }
+
+            telemetry.addData("Position",pos);
+
             telemetry.addData("Delay", delayTime);
+
+            telemetry.addData("PRESS 'BACK' TO READY UP","");
+
             telemetry.update();
         }
+
+        telemetry.addData("READY FOR START","");
+        telemetry.addData("Position",pos);
+
+        telemetry.update();
 
         AutonomousQueues.initiate(robot, delayTime);
 
@@ -101,6 +120,8 @@ public class AutonomousOpMode extends LinearOpMode {
             if (t)
                 msg = opQueue.getCurrentOperation().getName();
             telemetry.addData("Current Objective",msg);
+            telemetry.addData("ss chance",robot.chanceNextToSkystone());
+            telemetry.addData("skystone",robot.nextToSkystone());
             telemetry.addData("Angle ", robot.getAngle());
             telemetry.update();
         }

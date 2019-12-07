@@ -152,15 +152,23 @@ public class RobotHardware {
     }
 
     double skystoneThreshold = 1.5;
-    public boolean nextToSkystone() {
-        if(yellowRatio()>skystoneThreshold)
-            return false;
-        return true;
+    public double chanceNextToSkystone() {
+        //scale the data according to what was used in the logistic regression
+        double red = (getRed()-231.0)/398.0,
+               green = (getGreen()-364.791667)/745.0,
+               blue = (getBlue()-155.5)/393.0,
+               dist = (getDistance()-3.475)/1.5;
+        //apply the weights to get the predicted value
+        double value = 2.02173-38.9551*red+29.4573*green+43.8142*blue-5.1269*dist;
+        //apply the sigmoid function to determine chance of skystone
+        double e = Math.exp(-value);
+        double chance = 1/(1+e);
+        //if that chance is >0.5, we are more than likely next to a skystone
+        return chance;
     }
-    public double yellowRatio() {
-        int redGreenAverage = (getRed()+getGreen())/2;
-        double ratio = redGreenAverage/(double)getBlue();
-        return ratio;
+
+    public boolean nextToSkystone() {
+        return chanceNextToSkystone() > 0.5;
     }
 
     public double getDistance() {

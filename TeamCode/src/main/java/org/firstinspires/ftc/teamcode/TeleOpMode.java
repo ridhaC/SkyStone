@@ -84,7 +84,7 @@ public class TeleOpMode extends LinearOpMode {
             telemetry.addData("Distance",hardware.getDistance()+"");
 
             telemetry.addData("Skystone", hardware.nextToSkystone());
-            telemetry.addData("Yellow Ratio", hardware.yellowRatio());
+            telemetry.addData("chance",hardware.chanceNextToSkystone());
             telemetry.addData("Angle ", hardware.getAngle());
             telemetry.addData("Acceleration X ", hardware.getAccelerationX());
             telemetry.addData("Acceleration Y ", hardware.getAccelerationY());
