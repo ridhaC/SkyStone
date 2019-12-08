@@ -53,23 +53,35 @@ public class AutonomousQueues {
         /**
          * Implementation for start position at the blue stones
          */
-        ops.add(new Operation("line up with wall", 1.4f)    {
-           public boolean defineOperation() {
-               this.getRobot().driveRight(0.5);
-               return true;
-           }
-        });
-        ops.add(new Operation("move to stones") {
+//        ops.add(new Operation("line up with wall", 1.4f)    {
+//           public boolean defineOperation() {
+//               this.getRobot().driveRight(0.5);
+//               return true;
+//           }
+//        });
+        ops.add(new Operation("get close to stones",1.0f) {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.3);
-                return this.getRobot().getDistance()>3.6;
+                return true;
             }
         });
-        ops.add(new Operation("search for stones", 7.0f) {
+        ops.add(new Operation("line up with stones") {
             public boolean defineOperation() {
-                this.getRobot().driveLeft(0.2);
+                this.getRobot().driveForward(0.15);
+                return this.getRobot().getDistance()>3.8;
+            }
+        });
+        ops.add(new Operation("search for stones") {
+            public boolean defineOperation() {
+                this.getRobot().driveRight(0.2);
                 return !this.getRobot().nextToSkystone();
             }
+        });
+        ops.add(new Operation("center align",1.0f) {
+           public boolean defineOperation() {
+               this.getRobot().driveRight(0.2);
+               return true;
+           }
         });
         ops.add(new Operation("realign with stone", 0.5f) {
             public boolean defineOperation() {
@@ -77,33 +89,33 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("extrude slide", 0.5f) {
-            public boolean defineOperation() {
-                this.getRobot().driveSpool(0.7);
-                return true;
-            }
-        });
-        ops.add(new Operation("grab stone", 0.5f) {
-            public boolean defineOperation() {
-                this.getRobot().toggleClamp();
-                return true;
-            }
-        });
-        ops.add(new Operation("retract slide", 0.5f) {
-            public boolean defineOperation() {
-                this.getRobot().driveSpool(-0.7);
-                return true;
-            }
-        });
+//        ops.add(new Operation("extrude slide", 0.5f) {
+//            public boolean defineOperation() {
+//                this.getRobot().driveSpool(0.7);
+//                return true;
+//            }
+//        });
+//        ops.add(new Operation("grab stone", 0.5f) {
+//            public boolean defineOperation() {
+//                this.getRobot().toggleClamp();
+//                return true;
+//            }
+//        });
+//        ops.add(new Operation("retract slide", 0.5f) {
+//            public boolean defineOperation() {
+//                this.getRobot().driveSpool(-0.7);
+//                return true;
+//            }
+//        });
         ops.add(new Operation("move back", 0.5f) {
             public boolean defineOperation() {
                 this.getRobot().driveBackward(0.5);
                 return true;
             }
         });
-        ops.add(new Operation("deliver stone",2.0f) {
+        ops.add(new Operation("deliver stone",4.0f) {
             public boolean defineOperation() {
-                getRobot().driveLeft(0.4);
+                getRobot().driveLeft(0.6);
                 return true;
             }
         });

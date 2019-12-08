@@ -12,8 +12,6 @@ public class AutonomousOpMode extends LinearOpMode {
     private RobotHardware robot = new RobotHardware();
     private ElapsedTime elapsedTime = new ElapsedTime();
 
-
-
     public AutonomousOpMode() {
 
     }

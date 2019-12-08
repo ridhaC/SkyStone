@@ -53,7 +53,7 @@ public class RobotHardware {
 
     //foundation hook servos
     private Servo foundationHook;
-    double hookClosedPosition = 0.85;
+    double hookClosedPosition = 0.9;
     double hookOpenPosition = 0.40;
 
     public RobotHardware() {
@@ -133,6 +133,7 @@ public class RobotHardware {
             //drives couldn't initialize.. let the program run anyway
         }
     }
+
     public int getRed() {
         if (colorSensor == null)
             return -1;
@@ -254,6 +255,7 @@ public class RobotHardware {
         //backward- -1, -1, -1, -1
         //right   - +1, -1, -1  +1
         //left    - -1, +1, +1, -1
+        turn *= 0.8; //limit the turn speed a bit
         lf = drive + strafe - turn;
         rf = drive - strafe + turn;
         rb = drive + strafe + turn;
@@ -464,6 +466,7 @@ public class RobotHardware {
 
     public void stopAllMotors() {
         this.stopWheels();
-
+       // this.driveSpool(0);
+       // this.driveRack(0);
     }
 }
