@@ -46,15 +46,15 @@ public class RobotHardware {
     private Servo insideClampServo;
     private Servo outsideClampServo;
     double outsideclampStartingPosition = 0.2;
-    double outsideClampClosedPosition = 0.49;
+    double outsideClampClosedPosition = 0.51;
     double outsideClampOpenPosition = 1.0;
     double insideClampClosedPosition = 0.51;
-    double insideClampOpenPosition = 0.15;
+    double insideClampOpenPosition = 0.05;
 
     //foundation hook servos
     private Servo foundationHook;
-    double hookClosedPosition = 0.9;
-    double hookOpenPosition = 0.40;
+    double hookClosedPosition = 1.0;
+    double hookOpenPosition = 0.0;
 
     public RobotHardware() {
 
@@ -437,6 +437,16 @@ public class RobotHardware {
     public void compactClamp()  {
         clamp = 0;
         outsideClampServo.setPosition(outsideclampStartingPosition);
+        insideClampServo.setPosition(insideClampOpenPosition);
+    }
+
+    public void closeClamp() {
+        outsideClampServo.setPosition(outsideClampClosedPosition);
+        insideClampServo.setPosition(insideClampClosedPosition);
+    }
+
+    public void openClamp() {
+        outsideClampServo.setPosition(outsideClampOpenPosition);
         insideClampServo.setPosition(insideClampOpenPosition);
     }
 

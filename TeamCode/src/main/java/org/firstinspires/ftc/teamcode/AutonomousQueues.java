@@ -53,12 +53,13 @@ public class AutonomousQueues {
         /**
          * Implementation for start position at the blue stones
          */
-//        ops.add(new Operation("line up with wall", 1.4f)    {
-//           public boolean defineOperation() {
-//               this.getRobot().driveRight(0.5);
-//               return true;
-//           }
-//        });
+        ops.add(new Operation("open clamp",0.5f){
+            public boolean defineOperation() {
+                if (this.isFirstIteration())
+                    this.getRobot().openClamp();
+                return true;
+            }
+        });
         ops.add(new Operation("get close to stones",1.0f) {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.3);
@@ -73,61 +74,50 @@ public class AutonomousQueues {
         });
         ops.add(new Operation("search for stones") {
             public boolean defineOperation() {
-                this.getRobot().driveRight(0.2);
+                this.getRobot().driveRight(0.3);
                 return !this.getRobot().nextToSkystone();
             }
         });
-        ops.add(new Operation("center align",1.0f) {
+        ops.add(new Operation("extrude slide", 2.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveSpool(1.0);
+                return true;
+            }
+        });
+        ops.add(new Operation("close clamp",0.5f){
+            public boolean defineOperation() {
+                if (this.isFirstIteration())
+                    this.getRobot().closeClamp();
+                return true;
+            }
+        });
+        ops.add(new Operation("move back", 0.5f) {
+            public boolean defineOperation() {
+                this.getRobot().driveBackward(0.25);
+                return true;
+            }
+        });
+        ops.add(new Operation("waiting", 0.5f) {
            public boolean defineOperation() {
-               this.getRobot().driveRight(0.2);
                return true;
            }
         });
-        ops.add(new Operation("realign with stone", 0.5f) {
-            public boolean defineOperation() {
-                this.getRobot().driveRight(0.2);
-                return true;
-            }
-        });
-//        ops.add(new Operation("extrude slide", 0.5f) {
-//            public boolean defineOperation() {
-//                this.getRobot().driveSpool(0.7);
-//                return true;
-//            }
-//        });
-//        ops.add(new Operation("grab stone", 0.5f) {
-//            public boolean defineOperation() {
-//                this.getRobot().toggleClamp();
-//                return true;
-//            }
-//        });
-//        ops.add(new Operation("retract slide", 0.5f) {
-//            public boolean defineOperation() {
-//                this.getRobot().driveSpool(-0.7);
-//                return true;
-//            }
-//        });
-        ops.add(new Operation("move back", 0.5f) {
-            public boolean defineOperation() {
-                this.getRobot().driveBackward(0.5);
-                return true;
-            }
-        });
         ops.add(new Operation("deliver stone",4.0f) {
             public boolean defineOperation() {
-                getRobot().driveLeft(0.6);
+                getRobot().driveLeft(0.4);
                 return true;
             }
         });
-        ops.add(new Operation("drop stone", 0.5f) {
+        ops.add(new Operation("drop stone", 1.0f) {
             public boolean defineOperation() {
-                this.getRobot().toggleClamp();
+                if (this.isFirstIteration())
+                    this.getRobot().toggleClamp();
                 return true;
             }
         });
-        ops.add(new Operation("return to parking position", 0.5f) {
-            public boolean defineOperation() {
-                this.getRobot().driveRight(1.0);
+        ops.add(new Operation("return to parking position", 1.5f) {
+             public boolean defineOperation() {
+                this.getRobot().driveRight(0.4);
                 return true;
             }
         });
