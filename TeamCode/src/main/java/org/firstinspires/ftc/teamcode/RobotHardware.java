@@ -1,21 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import com.qualcomm.hardware.bosch.*;
+import com.qualcomm.robotcore.hardware.*;
+import org.firstinspires.ftc.robotcore.external.navigation.*;
 
 public class RobotHardware {
     //this is used for autonomous. not necessary in teleop
@@ -27,6 +14,7 @@ public class RobotHardware {
     public void setSide(Side side) {
         this.side = side;
     }
+
     //encourage data encapsulation
     //wheel motors
     private DcMotor frontLeftDrive;
@@ -40,15 +28,10 @@ public class RobotHardware {
 
     private ColorSensor frontLeftColorSensor;
     private DistanceSensor frontLeftDistanceSensor;
-    private ColorSensor bottomRightColorSensor;
-    private DistanceSensor bottomRightDistanceSensor;
-    private ColorSensor bottomLeftColorSensor;
-    private DistanceSensor bottomLeftDistanceSensor;
     private ColorSensor frontRightColorSensor;
     private DistanceSensor frontRightDistanceSensor;
-
-    private TouchSensor rightTouchSensor;
-    private TouchSensor leftTouchSensor;
+    private ColorSensor bottomColorSensor;
+    private DistanceSensor bottomDistanceSensor;
 
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
@@ -128,14 +111,8 @@ public class RobotHardware {
             frontRightColorSensor = hMap.get(ColorSensor.class,"front_right_color_sensor");
             frontRightDistanceSensor = hMap.get(DistanceSensor.class,"front_right_color_sensor");
 
-            bottomRightColorSensor = hMap.get(ColorSensor.class,"bottom_right_color_sensor");
-            bottomRightDistanceSensor = hMap.get(DistanceSensor.class,"bottom_right_color_sensor");
-
-            bottomLeftColorSensor = hMap.get(ColorSensor.class,"bottom_left_color_sensor");
-            bottomLeftDistanceSensor = hMap.get(DistanceSensor.class,"bottom_left_color_sensor");
-
-            rightTouchSensor = hMap.get(TouchSensor.class, "right_touch_sensor");
-            leftTouchSensor = hMap.get(TouchSensor.class, "left_touch_sensor");
+            bottomColorSensor = hMap.get(ColorSensor.class,"bottom_color_sensor");
+            bottomDistanceSensor = hMap.get(DistanceSensor.class,"bottom_color_sensor");
 
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
             parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -216,31 +193,19 @@ public class RobotHardware {
     }
 
     public double blueRatio() {
-        return bottomRightColorSensor.blue()/sum(bottomRightColorSensor);
+        return bottomColorSensor.blue()/sum(bottomColorSensor);
     }
 
     public double redRatio() {
-        return bottomLeftColorSensor.red()/sum(bottomLeftColorSensor);
+        return bottomColorSensor.red()/sum(bottomColorSensor);
     }
 
     public boolean overBlueStripe() {
-        double ratio = bottomRightColorSensor.blue()/(bottomRightColorSensor.red());
-        return ratio > 0.5;
+        return blueRatio() > 0.8;
     }
 
     public boolean overRedStripe() {
-        double ratio = bottomRightColorSensor.blue()/(bottomRightColorSensor.red());
-        if(bottomRightColorSensor.red()>200)
-            return true;
-        return false;
-    }
-
-    public boolean isTouchedRight() {
-        return rightTouchSensor.isPressed();
-    }
-
-    public boolean isTouchedLeft()  {
-        return leftTouchSensor.isPressed();
+        return redRatio() > 0.8;
     }
 
     public double getAccelerationX()    {
