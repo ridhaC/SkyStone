@@ -57,6 +57,8 @@ public abstract class Operation {
             this.clearTimer(); // if this is the first run of the operation method
         boolean run = defineOperation(); //calls the specified operation of the anonymous class
         this.iterate();
+        if (!run) //if the defineOperation has said were done, then were done
+            return false;
         if (runtime < 0) //no timer is set so return the end condition of the operation
             return run;
         if (elapsedTime() >= runtime) //if its set to run off a timer and it has completed

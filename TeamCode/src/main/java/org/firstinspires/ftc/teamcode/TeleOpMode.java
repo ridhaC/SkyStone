@@ -89,6 +89,8 @@ public class TeleOpMode extends LinearOpMode {
             telemetry.addData("Acceleration X ", hardware.getAccelerationX());
             telemetry.addData("Acceleration Y ", hardware.getAccelerationY());
             telemetry.addData("Acceleration Z ", hardware.getAccelerationZ());
+            telemetry.addData("blue ratio",hardware.blueRatio());
+            telemetry.addData("red ratio",hardware.redRatio());
             telemetry.addData("stage", RobotHardware.clamp);
             long now = System.currentTimeMillis();
             telemetry.addData("DT (ms)",now-last);

@@ -18,6 +18,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class RobotHardware {
+    //this is used for autonomous. not necessary in teleop
+    public static enum Side {
+        BLUE,
+        RED
+    }
+    private Side side = Side.BLUE;
+    public void setSide(Side side) {
+        this.side = side;
+    }
     //encourage data encapsulation
     //wheel motors
     private DcMotor frontLeftDrive;
@@ -202,13 +211,25 @@ public class RobotHardware {
         return frontLeftDistanceSensor.getDistance(DistanceUnit.CM);
     }
 
+    private int sum(ColorSensor cs) {
+        return cs.blue()+cs.red()+cs.green();
+    }
+
+    public double blueRatio() {
+        return bottomRightColorSensor.blue()/sum(bottomRightColorSensor);
+    }
+
+    public double redRatio() {
+        return bottomLeftColorSensor.red()/sum(bottomLeftColorSensor);
+    }
+
     public boolean overBlueStripe() {
-        if(bottomRightColorSensor.blue()>180)
-            return true;
-        return false;
+        double ratio = bottomRightColorSensor.blue()/(bottomRightColorSensor.red());
+        return ratio > 0.5;
     }
 
     public boolean overRedStripe() {
+        double ratio = bottomRightColorSensor.blue()/(bottomRightColorSensor.red());
         if(bottomRightColorSensor.red()>200)
             return true;
         return false;
