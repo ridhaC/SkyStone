@@ -59,7 +59,7 @@ public class TeleOpMode extends LinearOpMode {
         };
 
         ControllerCommand compactClampCommand= new ControllerCommand(ControllerCommand.actionable.onPress) {
-            public void defineOperation() {hardware.compactClamp();}
+            public void defineOperation() {hardware.initialClamps();}
         };
 
         long last = System.currentTimeMillis();

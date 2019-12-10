@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -28,8 +29,17 @@ public class RobotHardware {
     private DcMotor rackDrive; //connects to both motors
     private DcMotor spoolDrive;
 
-    private ColorSensor colorSensor;
-    private DistanceSensor distanceSensor;
+    private ColorSensor frontLeftColorSensor;
+    private DistanceSensor frontLeftDistanceSensor;
+    private ColorSensor bottomRightColorSensor;
+    private DistanceSensor bottomRightDistanceSensor;
+    private ColorSensor bottomLeftColorSensor;
+    private DistanceSensor bottomLeftDistanceSensor;
+    private ColorSensor frontRightColorSensor;
+    private DistanceSensor frontRightDistanceSensor;
+
+    private TouchSensor rightTouchSensor;
+    private TouchSensor leftTouchSensor;
 
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
@@ -45,11 +55,12 @@ public class RobotHardware {
     //clamp servo
     private Servo insideClampServo;
     private Servo outsideClampServo;
-    double outsideclampStartingPosition = 0.2;
-    double outsideClampClosedPosition = 0.51;
-    double outsideClampOpenPosition = 1.0;
-    double insideClampClosedPosition = 0.51;
-    double insideClampOpenPosition = 0.05;
+    double outsideclampStartingPosition = 0.05;
+    double outsideClampClosedPosition = 0.01;
+    double outsideClampOpenPosition = 0.5;
+    double insideClampStartingPosition = 0.52;
+    double insideClampClosedPosition = 1.0;
+    double insideClampOpenPosition = 0.70;
 
     //foundation hook servos
     private Servo foundationHook;
@@ -102,8 +113,21 @@ public class RobotHardware {
             spoolDrive.setPower(0);
 
             //sensors
-            colorSensor = hMap.get(ColorSensor.class,"color_sensor");
-            distanceSensor = hMap.get(DistanceSensor.class,"color_sensor");
+            frontLeftColorSensor = hMap.get(ColorSensor.class,"front_left_color_sensor");
+            frontLeftDistanceSensor = hMap.get(DistanceSensor.class,"front_left_color_sensor");
+
+            frontRightColorSensor = hMap.get(ColorSensor.class,"front_right_color_sensor");
+            frontRightDistanceSensor = hMap.get(DistanceSensor.class,"front_right_color_sensor");
+
+            bottomRightColorSensor = hMap.get(ColorSensor.class,"bottom_right_color_sensor");
+            bottomRightDistanceSensor = hMap.get(DistanceSensor.class,"bottom_right_color_sensor");
+
+            bottomLeftColorSensor = hMap.get(ColorSensor.class,"bottom_left_color_sensor");
+            bottomLeftDistanceSensor = hMap.get(DistanceSensor.class,"bottom_left_color_sensor");
+
+            rightTouchSensor = hMap.get(TouchSensor.class, "right_touch_sensor");
+            leftTouchSensor = hMap.get(TouchSensor.class, "left_touch_sensor");
+
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
             parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
             parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -135,21 +159,21 @@ public class RobotHardware {
     }
 
     public int getRed() {
-        if (colorSensor == null)
+        if (frontLeftColorSensor == null)
             return -1;
-        return colorSensor.red();
+        return frontLeftColorSensor.red();
     }
 
     public int getGreen() {
-        if (colorSensor == null)
+        if (frontLeftColorSensor == null)
             return -1;
-        return colorSensor.green();
+        return frontLeftColorSensor.green();
     }
 
     public int getBlue() {
-        if (colorSensor == null)
+        if (frontLeftColorSensor == null)
             return -1;
-        return colorSensor.blue();
+        return frontLeftColorSensor.blue();
     }
 
     double skystoneThreshold = 1.5;
@@ -169,13 +193,33 @@ public class RobotHardware {
     }
 
     public boolean nextToSkystone() {
-        return chanceNextToSkystone() > 0.5;
+        return chanceNextToSkystone() > 0.7;
     }
 
     public double getDistance() {
-        if (distanceSensor == null)
+        if (frontLeftDistanceSensor == null)
             return -1;
-        return distanceSensor.getDistance(DistanceUnit.CM);
+        return frontLeftDistanceSensor.getDistance(DistanceUnit.CM);
+    }
+
+    public boolean overBlueStripe() {
+        if(bottomRightColorSensor.blue()>180)
+            return true;
+        return false;
+    }
+
+    public boolean overRedStripe() {
+        if(bottomRightColorSensor.red()>200)
+            return true;
+        return false;
+    }
+
+    public boolean isTouchedRight() {
+        return rightTouchSensor.isPressed();
+    }
+
+    public boolean isTouchedLeft()  {
+        return leftTouchSensor.isPressed();
     }
 
     public double getAccelerationX()    {
@@ -359,6 +403,11 @@ public class RobotHardware {
 
         return globalAngle;
     }
+
+    public double getAngleRadians() {
+        return Math.toRadians(this.getAngle());
+    }
+
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
@@ -425,19 +474,15 @@ public class RobotHardware {
                 outsideClampServo.setPosition(outsideClampClosedPosition);
                 insideClampServo.setPosition(insideClampClosedPosition);
                 break;
-            //case 2:
-            //outsideClampServo.setPosition(outsideClampOpenPosition);
-            //insideClampServo.setPosition(insideClampOpenPosition);
-            //break;
         }
         clamp++;
         clamp %= 2;
     }
 
-    public void compactClamp()  {
+    public void initialClamps()  {
         clamp = 0;
         outsideClampServo.setPosition(outsideclampStartingPosition);
-        insideClampServo.setPosition(insideClampOpenPosition);
+        insideClampServo.setPosition(insideClampStartingPosition);
     }
 
     public void closeClamp() {
@@ -445,7 +490,7 @@ public class RobotHardware {
         insideClampServo.setPosition(insideClampClosedPosition);
     }
 
-    public void openClamp() {
+    public void openClamps()    {
         outsideClampServo.setPosition(outsideClampOpenPosition);
         insideClampServo.setPosition(insideClampOpenPosition);
     }

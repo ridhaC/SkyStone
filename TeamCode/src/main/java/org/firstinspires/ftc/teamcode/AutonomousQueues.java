@@ -13,7 +13,7 @@ public class AutonomousQueues {
         List<Operation> allStartingOps = new ArrayList<Operation>();
         allStartingOps.add(new Operation("prep servos",delayTime) {
             public boolean defineOperation() {
-                this.getRobot().compactClamp();
+                this.getRobot().initialClamps();
                 return true;
             }
         });
@@ -24,27 +24,31 @@ public class AutonomousQueues {
         START_RED_FOUNDATION = new OperationQueue(robot);
 
         List<Operation> deployClamp = new ArrayList<Operation>();
-        deployClamp.add(new Operation("lift rack",0.5f) {
+        /*deployClamp.add(new Operation("open front clamp",0.5f) {
             public boolean defineOperation() {
-                this.getRobot().driveRack(0.5);
+                this.getRobot().openFrontClamp();
+                return true;
+            }
+        });*/
+        deployClamp.add(new Operation("lift rack",1.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveRack(0.6);
+                this.getRobot().driveSpool(0.6);
                 return true;
             }
         });
-        deployClamp.add(new Operation("extrude slide",2.0f) {
+        deployClamp.add(new Operation("toggle clamp",0.25f) {
             public boolean defineOperation() {
-                this.getRobot().driveSpool(0.7);
-                return true;
-            }
-        });
-        deployClamp.add(new Operation("toggle clamp",0.5f) {
-            public boolean defineOperation() {
+                this.getRobot().driveRack(0);
+                this.getRobot().driveSpool(0.35);
                 this.getRobot().toggleClamp();
                 return true;
             }
         });
-        deployClamp.add(new Operation("lower rack",0.7f) {
+        deployClamp.add(new Operation("lower rack",0.5f) {
             public boolean defineOperation() {
-                this.getRobot().driveRack(-0.5);
+                this.getRobot().driveRack(-0.6);
+                this.getRobot().driveSpool(0.0);
                 return true;
             }
         });
@@ -53,13 +57,6 @@ public class AutonomousQueues {
         /**
          * Implementation for start position at the blue stones
          */
-        ops.add(new Operation("open clamp",0.5f){
-            public boolean defineOperation() {
-                if (this.isFirstIteration())
-                    this.getRobot().openClamp();
-                return true;
-            }
-        });
         ops.add(new Operation("get close to stones",1.0f) {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.3);
@@ -78,9 +75,27 @@ public class AutonomousQueues {
                 return !this.getRobot().nextToSkystone();
             }
         });
-        ops.add(new Operation("extrude slide", 2.0f) {
+        ops.add(new Operation("search for stones") {
+            double desiredHeadingRadians;
+            double HEADING_CORRECTION_COEFFICIENT;
             public boolean defineOperation() {
-                this.getRobot().driveSpool(1.0);
+                if(isFirstIteration())  {
+                    HEADING_CORRECTION_COEFFICIENT = 0.25f;
+                    desiredHeadingRadians = this.getRobot().getAngleRadians();
+                }
+                double currentHeadingRadians = this.getRobot().getAngleRadians();
+                double headingError = currentHeadingRadians - desiredHeadingRadians;
+                if (headingError > Math.PI) headingError -= (float)Math.PI;
+                else if (headingError < -Math.PI) headingError += (float)Math.PI;
+                double headingCorrectionPower = -HEADING_CORRECTION_COEFFICIENT * headingError;
+                this.getRobot().strafe(0, 0.3, headingCorrectionPower, 1.0);
+                return !this.getRobot().nextToSkystone();
+            }
+        });
+
+        ops.add(new Operation("realign with stones", 0.2f)    {
+            public boolean defineOperation()    {
+                this.getRobot().driveLeft(0.2);
                 return true;
             }
         });
@@ -91,27 +106,34 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("move back", 0.5f) {
+        ops.add(new Operation("move back", 1.25f) {
             public boolean defineOperation() {
                 this.getRobot().driveBackward(0.25);
                 return true;
             }
         });
-        ops.add(new Operation("waiting", 0.5f) {
-           public boolean defineOperation() {
-               return true;
-           }
+        ops.add(new Operation("get close to stripe", 0.5f)  {
+            public boolean defineOperation()    {
+                this.getRobot().driveLeft(0.6);
+                return true;
+            }
         });
-        ops.add(new Operation("deliver stone",4.0f) {
+        ops.add(new Operation("go to stripe") {
             public boolean defineOperation() {
-                getRobot().driveLeft(0.4);
+                this.getRobot().driveLeft(0.5);
+                return !this.getRobot().overBlueStripe();
+            }
+        });
+        ops.add(new Operation("clear stripe", 1.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveLeft(0.9);
                 return true;
             }
         });
         ops.add(new Operation("drop stone", 1.0f) {
             public boolean defineOperation() {
                 if (this.isFirstIteration())
-                    this.getRobot().toggleClamp();
+                    this.getRobot().openClamps();
                 return true;
             }
         });
@@ -121,6 +143,8 @@ public class AutonomousQueues {
                 return true;
             }
         });
+        START_BLUE_STONES.add(allStartingOps);
+        START_BLUE_STONES.add(deployClamp);
         START_BLUE_STONES.add(ops);
         ops.clear();
         /**
@@ -157,7 +181,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("move back", 0.5f) {
+        ops.add(new Operation("move back", 1.0f) {
             public boolean defineOperation() {
                 this.getRobot().driveBackward(0.7);
                 return true;
