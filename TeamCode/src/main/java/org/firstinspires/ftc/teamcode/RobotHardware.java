@@ -48,7 +48,7 @@ public class RobotHardware {
     private Servo insideClampServo;
     private Servo outsideClampServo;
     double outsideclampStartingPosition = 0.05;
-    double outsideClampClosedPosition = 0.01;
+    double outsideClampClosedPosition = 0.05;
     double outsideClampOpenPosition = 0.5;
     double insideClampStartingPosition = 0.52;
     double insideClampClosedPosition = 1.0;
@@ -179,7 +179,8 @@ public class RobotHardware {
     }
 
     public boolean nextToSkystone() {
-        return chanceNextToSkystone() > 0.7;
+        //return chanceNextToSkystone() > 0.7;
+        return getBlue()*1.5<getRed();
     }
 
     public double getDistance() {

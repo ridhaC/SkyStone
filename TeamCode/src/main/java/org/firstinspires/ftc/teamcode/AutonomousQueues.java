@@ -54,8 +54,8 @@ public class AutonomousQueues {
         });
 
         List<Operation> ops = new ArrayList<Operation>();
-        /**
-         * Implementation for start position at the blue stones
+        /*
+          Implementation for start position at the blue stones
          */
         ops.add(new Operation("get close to stones",1.0f) {
             public boolean defineOperation() {
@@ -66,15 +66,15 @@ public class AutonomousQueues {
         ops.add(new Operation("line up with stones") {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.15);
-                return this.getRobot().getDistance()>3.8;
+                return this.getRobot().getDistance()>7.0;
             }
         });
-        ops.add(new Operation("search for stones") {
+        /*ops.add(new Operation("search for stones") {
             public boolean defineOperation() {
                 this.getRobot().driveRight(0.3);
                 return !this.getRobot().nextToSkystone();
             }
-        });
+        });*/
         ops.add(new Operation("search for stones") {
             double desiredHeadingRadians;
             double HEADING_CORRECTION_COEFFICIENT;
@@ -85,8 +85,10 @@ public class AutonomousQueues {
                 }
                 double currentHeadingRadians = this.getRobot().getAngleRadians();
                 double headingError = currentHeadingRadians - desiredHeadingRadians;
-                if (headingError > Math.PI) headingError -= (float)Math.PI;
-                else if (headingError < -Math.PI) headingError += (float)Math.PI;
+                if (headingError > Math.PI)
+                    headingError -= (float)Math.PI;
+                else if (headingError < -Math.PI)
+                    headingError += (float)Math.PI;
                 double headingCorrectionPower = -HEADING_CORRECTION_COEFFICIENT * headingError;
                 this.getRobot().strafe(0, 0.3, headingCorrectionPower, 1.0);
                 return !this.getRobot().nextToSkystone();
@@ -114,7 +116,7 @@ public class AutonomousQueues {
         });
         ops.add(new Operation("get close to stripe", 0.5f)  {
             public boolean defineOperation()    {
-                this.getRobot().driveLeft(0.6);
+                this.getRobot().driveLeft(0.7);
                 return true;
             }
         });
@@ -124,13 +126,13 @@ public class AutonomousQueues {
                 return !this.getRobot().overBlueStripe();
             }
         });
-        ops.add(new Operation("clear stripe", 1.0f) {
+        ops.add(new Operation("clear stripe", 0.6f) {
             public boolean defineOperation() {
-                this.getRobot().driveLeft(0.9);
+                this.getRobot().driveLeft(0.7);
                 return true;
             }
         });
-        ops.add(new Operation("drop stone", 1.0f) {
+        ops.add(new Operation("drop stone", 0.7f) {
             public boolean defineOperation() {
                 if (this.isFirstIteration())
                     this.getRobot().openClamps();
@@ -147,8 +149,8 @@ public class AutonomousQueues {
         START_BLUE_STONES.add(deployClamp);
         START_BLUE_STONES.add(ops);
         ops.clear();
-        /**
-         * Implementation for start position at the red stones
+        /*
+          Implementation for start position at the red stones
          */
         START_RED_STONES = new OperationQueue(robot);
         ops.add(new Operation("Move to stones",1.2f) {
@@ -208,8 +210,8 @@ public class AutonomousQueues {
         START_RED_STONES.add(ops);
         ops.clear();
 
-        /**
-         * Implementation for start position at the blue foundation
+        /*
+          Implementation for start position at the blue foundation
          */
         //strafe right to under bridge
         ops.add(new Operation("giving space",0.1f) {
@@ -262,8 +264,8 @@ public class AutonomousQueues {
         START_BLUE_FOUNDATION.add(ops);
         ops.clear();
 
-        /**
-         * Implementation for start position at the red foundation
+        /*
+         Implementation for start position at the red foundation
          */
         ops.add(new Operation("giving space",0.1f) {
             public boolean defineOperation() {
