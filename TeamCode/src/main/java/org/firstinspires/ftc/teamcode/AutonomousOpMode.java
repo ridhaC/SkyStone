@@ -97,17 +97,19 @@ public class AutonomousOpMode extends LinearOpMode {
         switch(opInt)   {
             case AutonomousQueues.BLUE_FOUNDATION_INT:
                 opQueue = AutonomousQueues.START_BLUE_FOUNDATION;
+                robot.setSide(RobotHardware.Side.BLUE);
                 break;
             case AutonomousQueues.BLUE_STONES_INT:
                 opQueue = AutonomousQueues.START_BLUE_STONES;
+                robot.setSide(RobotHardware.Side.BLUE);
                 break;
-
             case AutonomousQueues.RED_FOUNDATION_INT:
                 opQueue = AutonomousQueues.START_RED_FOUNDATION;
+                robot.setSide(RobotHardware.Side.RED);
                 break;
-
             case AutonomousQueues.RED_STONES_INT:
                 opQueue = AutonomousQueues.START_RED_STONES;
+                robot.setSide(RobotHardware.Side.RED);
                 break;
         }
 
@@ -125,7 +127,3 @@ public class AutonomousOpMode extends LinearOpMode {
         }
     }
 }
-
-
-
-

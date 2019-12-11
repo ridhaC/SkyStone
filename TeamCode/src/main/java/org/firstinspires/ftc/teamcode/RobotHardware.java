@@ -144,22 +144,29 @@ public class RobotHardware {
         }
     }
 
+    private ColorSensor getFrontSensor() {
+        if (this.side == Side.BLUE)
+            return frontRightColorSensor;
+        else
+            return frontLeftColorSensor;
+    }
+
     public int getRed() {
-        if (frontLeftColorSensor == null)
+        if (getFrontSensor() == null)
             return -1;
-        return frontLeftColorSensor.red();
+        return getFrontSensor().red();
     }
 
     public int getGreen() {
-        if (frontLeftColorSensor == null)
+        if (getFrontSensor() == null)
             return -1;
-        return frontLeftColorSensor.green();
+        return getFrontSensor().green();
     }
 
     public int getBlue() {
-        if (frontLeftColorSensor == null)
+        if (getFrontSensor() == null)
             return -1;
-        return frontLeftColorSensor.blue();
+        return getFrontSensor().blue();
     }
 
     double skystoneThreshold = 1.5;
@@ -184,9 +191,12 @@ public class RobotHardware {
     }
 
     public double getDistance() {
-        if (frontLeftDistanceSensor == null)
+        DistanceSensor toUse = frontLeftDistanceSensor; //for the red side
+        if (this.side == Side.BLUE)
+            toUse = frontRightDistanceSensor;
+        if (toUse == null)
             return -1;
-        return frontLeftDistanceSensor.getDistance(DistanceUnit.CM);
+        return toUse.getDistance(DistanceUnit.CM);
     }
 
     private int sum(ColorSensor cs) {
@@ -194,11 +204,11 @@ public class RobotHardware {
     }
 
     public double blueRatio() {
-        return bottomColorSensor.blue()/sum(bottomColorSensor);
+        return (double)bottomColorSensor.blue()/sum(bottomColorSensor);
     }
 
     public double redRatio() {
-        return bottomColorSensor.red()/sum(bottomColorSensor);
+        return (double)bottomColorSensor.red()/sum(bottomColorSensor);
     }
 
     public boolean overBlueStripe() {

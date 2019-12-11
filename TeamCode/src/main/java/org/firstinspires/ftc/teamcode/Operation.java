@@ -32,7 +32,7 @@ public abstract class Operation {
         return iterations == 0;
     }
 
-    public int iterations() {
+    public int getIterations() {
         return iterations;
     }
 
