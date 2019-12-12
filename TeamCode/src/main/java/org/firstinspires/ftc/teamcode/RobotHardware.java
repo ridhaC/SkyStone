@@ -28,7 +28,7 @@ public class RobotHardware {
 
     private ColorSensor frontLeftColorSensor;
     private DistanceSensor frontLeftDistanceSensor;
-    private ColorSensor frontRightColorSensor;
+    public ColorSensor frontRightColorSensor;
     private DistanceSensor frontRightDistanceSensor;
     private ColorSensor bottomColorSensor;
     private DistanceSensor bottomDistanceSensor;
@@ -186,8 +186,7 @@ public class RobotHardware {
     }
 
     public boolean nextToSkystone() {
-        //return chanceNextToSkystone() > 0.7;
-        return getBlue()*1.5<getRed();
+        return chanceNextToSkystone() > 0.7;
     }
 
     public double getDistance() {

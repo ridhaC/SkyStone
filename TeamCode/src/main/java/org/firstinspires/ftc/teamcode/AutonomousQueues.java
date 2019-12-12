@@ -13,7 +13,10 @@ public class AutonomousQueues {
         List<Operation> allStartingOps = new ArrayList<Operation>();
         allStartingOps.add(new Operation("prep servos",delayTime) {
             public boolean defineOperation() {
-                this.getRobot().initialClamps();
+                if (this.isFirstIteration()) {
+                    this.getRobot().initialClamps();
+                    this.getRobot().frontRightColorSensor.enableLed(false);
+                }
                 return true;
             }
         });
@@ -66,38 +69,40 @@ public class AutonomousQueues {
         ops.add(new Operation("line up with stones") {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.15);
-                return this.getRobot().getDistance()>7.0;
+                this.getRobot().frontRightColorSensor.enableLed(true);
+                return this.getRobot().getDistance()>3.8;
             }
         });
-        /*ops.add(new Operation("search for stones") {
+        ops.add(new Operation("search for stones") {
             public boolean defineOperation() {
                 this.getRobot().driveRight(0.3);
                 return !this.getRobot().nextToSkystone();
             }
-        });*/
-        ops.add(new Operation("search for stones") {
-            double desiredHeadingRadians;
-            double HEADING_CORRECTION_COEFFICIENT;
-            public boolean defineOperation() {
-                if(isFirstIteration())  {
-                    HEADING_CORRECTION_COEFFICIENT = 0.25f;
-                    desiredHeadingRadians = this.getRobot().getAngleRadians();
-                }
-                double currentHeadingRadians = this.getRobot().getAngleRadians();
-                double headingError = currentHeadingRadians - desiredHeadingRadians;
-                if (headingError > Math.PI)
-                    headingError -= (float)Math.PI;
-                else if (headingError < -Math.PI)
-                    headingError += (float)Math.PI;
-                double headingCorrectionPower = -HEADING_CORRECTION_COEFFICIENT * headingError;
-                this.getRobot().strafe(0, 0.3, headingCorrectionPower, 1.0);
-                return !this.getRobot().nextToSkystone();
-            }
         });
+//        ops.add(new Operation("search for stones", 15.0f) {
+//            double desiredHeadingRadians;
+//            double HEADING_CORRECTION_COEFFICIENT;
+//            public boolean defineOperation() {
+//                if(isFirstIteration())  {
+//                    HEADING_CORRECTION_COEFFICIENT = 0.25f;
+//                    desiredHeadingRadians = this.getRobot().getAngleRadians();
+//                }
+//                double currentHeadingRadians = this.getRobot().getAngleRadians();
+//                double headingError = currentHeadingRadians - desiredHeadingRadians;
+//                if (headingError > Math.PI)
+//                    headingError -= (float)Math.PI;
+//                else if (headingError < -Math.PI)
+//                    headingError += (float)Math.PI;
+//                double headingCorrectionPower = -HEADING_CORRECTION_COEFFICIENT * headingError;
+//                this.getRobot().strafe(0, 0.3, headingCorrectionPower, 1.0)
+//                return !this.getRobot().nextToSkystone();
+//            }
+//        });
 
-        ops.add(new Operation("realign with stones", 0.2f)    {
+        ops.add(new Operation("realign with stones", 0.5f)    {
             public boolean defineOperation()    {
-                this.getRobot().driveLeft(0.2);
+                this.getRobot().driveRight(0.3);
+                this.getRobot().frontRightColorSensor.enableLed(false);
                 return true;
             }
         });
@@ -114,21 +119,21 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("get close to stripe", 0.5f)  {
-            public boolean defineOperation()    {
-                this.getRobot().driveLeft(0.7);
+        ops.add(new Operation("get close to stripe", 1.5f)  {
+            public boolean defineOperation() {
+                this.getRobot().driveLeft(0.5);
                 return true;
             }
         });
-        ops.add(new Operation("go to stripe") {
+//        ops.add(new Operation("go to stripe",5.0f) {
+//            public boolean defineOperation() {
+//                this.getRobot().driveLeft(0.4);
+//                return !this.getRobot().overBlueStripe();
+//            }
+//        });
+        ops.add(new Operation("clear stripe", 1.5f) {
             public boolean defineOperation() {
-                this.getRobot().driveLeft(0.5);
-                return !this.getRobot().overBlueStripe();
-            }
-        });
-        ops.add(new Operation("clear stripe", 0.6f) {
-            public boolean defineOperation() {
-                this.getRobot().driveLeft(0.7);
+                this.getRobot().driveLeft(0.4);
                 return true;
             }
         });
