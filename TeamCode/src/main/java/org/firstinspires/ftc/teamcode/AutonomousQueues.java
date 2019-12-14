@@ -102,12 +102,13 @@ public class AutonomousQueues {
         ops.add(new Operation("rotate",1.7f) {
             public boolean defineOperation() {
                 this.getRobot().turnLeft(0.5);
-                return this.getRobot().getAngle()<60;
+                return this.getRobot().getAngle()<50;
             }
         });
         ops.add(new Operation("rotate slower",1.7f) {
             public boolean defineOperation() {
-                this.getRobot().turnLeft(0.3);
+                this.getRobot().turnLeft(0.25
+                );
                 return this.getRobot().getAngle()<85;
             }
         });
@@ -241,53 +242,78 @@ public class AutonomousQueues {
           Implementation for start position at the blue foundation
          */
         //strafe right to under bridge
-        ops.add(new Operation("giving space",0.1f) {
+//        ops.add(new Operation("giving space",0.2f) {
+//            public boolean defineOperation() {
+//                getRobot().driveBackward(0.4);
+//                return true;
+//            }
+//        });
+//        ops.add(new Operation("moving to center",2.0f){
+//            public boolean defineOperation() {
+//                getRobot().driveRight(0.3);
+//                return true;
+//            }
+//        });
+        ops.add(new Operation("moving forward to site",1.25f) {
             public boolean defineOperation() {
                 getRobot().driveBackward(0.4);
                 return true;
             }
         });
-        ops.add(new Operation("moving to center",2.0f){
-            public boolean defineOperation() {
-                getRobot().driveRight(0.3);
-                return true;
-            }
-        });
-        ops.add(new Operation("moving forward to site",1.2f) {
-            public boolean defineOperation() {
-                getRobot().driveBackward(0.4);
-                return true;
-            }
-        });
-        ops.add(new Operation("waiting",2.0f) {
+        ops.add(new Operation("waiting",0.5f) {
             public boolean defineOperation() {
                 return true;
             }
         });
-        ops.add(new Operation("lowering hook",2.0f) {
+        ops.add(new Operation("lowering hook",1.0f) {
             public boolean defineOperation() {
                 getRobot().lowerHook();
                 return true;
             }
         });
-        ops.add(new Operation("driving back",8.0f) {
+        ops.add(new Operation("driving back",1.35f) {
             public boolean defineOperation() {
-                getRobot().driveForward(0.20);
+                getRobot().driveForward(0.40);
                 return true;
             }
         });
-        ops.add(new Operation("raising hook",2.0f) {
+        ops.add(new Operation("turn",10.0f) {
+           public boolean defineOperation() {
+               this.getRobot().turnLeft(0.4);
+               return this.getRobot().getAngle() < 85;
+           }
+        });
+        ops.add(new Operation("raising hook",1.0f) {
             public boolean defineOperation() {
                 getRobot().raiseHook();
                 return true;
             }
         });
-        ops.add(new Operation("parking",7.0f){
+        ops.add(new Operation("move to wall",1.9f) {
+           public boolean defineOperation() {
+               getRobot().driveRight(0.35);
+               return true;
+           }
+        });
+        ops.add(new Operation("parking",1.5f){
             public boolean defineOperation() {
-                getRobot().driveLeft(0.4);
+                getRobot().driveForward(0.3);
                 return true;
             }
         });
+        ops.add(new Operation("stop at blue line",3.0f) {
+            public boolean defineOperation() {
+                getRobot().driveForward(0.2);
+                return !this.getRobot().overBlueStripe();
+            }
+        });
+        ops.add(new Operation("center",0.5f) {
+            public boolean defineOperation() {
+                getRobot().driveForward(0.2);
+                return true;
+            }
+        });
+        START_BLUE_FOUNDATION.add(allStartingOps);
         START_BLUE_FOUNDATION.add(ops);
         ops.clear();
 

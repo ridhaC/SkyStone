@@ -48,7 +48,7 @@ public class AutonomousOpMode extends LinearOpMode {
         robot = new RobotHardware();
         robot.init(this.hardwareMap);
 
-        opInt = AutonomousQueues.BLUE_STONES_INT;
+        opInt = AutonomousQueues.BLUE_FOUNDATION_INT;
         
         telemetry.addData("Status","Initialized");
         telemetry.update();
