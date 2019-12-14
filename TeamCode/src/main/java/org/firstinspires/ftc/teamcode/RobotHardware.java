@@ -47,17 +47,19 @@ public class RobotHardware {
     //clamp servo
     private Servo insideClampServo;
     private Servo outsideClampServo;
-    double outsideclampStartingPosition = 0.05;
-    double outsideClampClosedPosition = 0.05;
-    double outsideClampOpenPosition = 0.5;
+    double outsideClampStartingPosition = 0.05;
     double insideClampStartingPosition = 0.52;
+    double outsideClampClosedPosition = 0.0;
     double insideClampClosedPosition = 1.0;
-    double insideClampOpenPosition = 0.70;
+    double outsideClampOpenPosition = 0.5;
+    double insideClampOpenPosition = 0.9;
 
     //foundation hook servos
-    private Servo foundationHook;
-    double hookClosedPosition = 1.0;
-    double hookOpenPosition = 0.0;
+    private Servo leftHook, rightHook;
+    double leftHookClosedPosition = 1.0;
+    double leftHookOpenPosition = 0.5;
+    double rightHookClosedPosition = 0.0;
+    double rightHookOpenPosition = 0.5;
 
     public RobotHardware() {
 
@@ -133,12 +135,11 @@ public class RobotHardware {
             //servos
             outsideClampServo = hMap.get(Servo.class, "outside_clamp");
             insideClampServo = hMap.get(Servo.class, "inside_clamp");
-            //outsideClampServo.setPosition(outsideclampStartingPosition);
-            //insideClampServo.setPosition(insideClampOpenPosition);
 
-            foundationHook = hMap.get(Servo.class, "hook");
-            foundationHook.setPosition(hookOpenPosition);
-
+            leftHook = hMap.get(Servo.class,"left_hook");
+            rightHook = hMap.get(Servo.class,"right_hook");
+            leftHook.setPosition(0.5);
+            rightHook.setPosition(0.5);
         } catch (NullPointerException e) {
             //drives couldn't initialize.. let the program run anyway
         }
@@ -211,11 +212,11 @@ public class RobotHardware {
     }
 
     public boolean overBlueStripe() {
-        return blueRatio() > 0.8;
+        return blueRatio() > 0.32;
     }
 
     public boolean overRedStripe() {
-        return redRatio() > 0.8;
+        return redRatio() > 0.32;
     }
 
     public double getAccelerationX()    {
@@ -459,25 +460,22 @@ public class RobotHardware {
         return isMotorBusy(frontLeftDrive) || isMotorBusy(frontRightDrive) || isMotorBusy(backLeftDrive) || isMotorBusy(backRightDrive);
     }
 
-    public static int clamp = 0;
+    public int clamp = 0;
     public void toggleClamp() {
         switch (clamp) {
             case 0:
-                outsideClampServo.setPosition(outsideClampOpenPosition);
-                insideClampServo.setPosition(insideClampClosedPosition);
+                closeClamp();
+                clamp = 1;
                 break;
             case 1:
-                outsideClampServo.setPosition(outsideClampClosedPosition);
-                insideClampServo.setPosition(insideClampClosedPosition);
+                openClamp();
+                clamp = 0;
                 break;
         }
-        clamp++;
-        clamp %= 2;
     }
 
     public void initialClamps()  {
-        clamp = 0;
-        outsideClampServo.setPosition(outsideclampStartingPosition);
+        outsideClampServo.setPosition(outsideClampStartingPosition);
         insideClampServo.setPosition(insideClampStartingPosition);
     }
 
@@ -486,7 +484,7 @@ public class RobotHardware {
         insideClampServo.setPosition(insideClampClosedPosition);
     }
 
-    public void openClamps()    {
+    public void openClamp() {
         outsideClampServo.setPosition(outsideClampOpenPosition);
         insideClampServo.setPosition(insideClampOpenPosition);
     }
@@ -504,11 +502,13 @@ public class RobotHardware {
 
 
     public void lowerHook() {
-        foundationHook.setPosition(hookClosedPosition);
+        leftHook.setPosition(leftHookClosedPosition);
+        rightHook.setPosition(rightHookClosedPosition);
     }
 
     public void raiseHook() {
-        foundationHook.setPosition(hookOpenPosition);
+        leftHook.setPosition(leftHookOpenPosition);
+        rightHook.setPosition(rightHookOpenPosition);
     }
 
     public boolean isHookDown() {

@@ -14,7 +14,7 @@ public class TeleOpMode extends LinearOpMode {
 
     }
 
-    private double fastMovementSpeed = 0.9, slowMovementSpeed = 0.6, movementSpeed = fastMovementSpeed;
+    private double movementSpeed = 0.6;
 
     @Override
     public void runOpMode() {
@@ -25,6 +25,7 @@ public class TeleOpMode extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+
         double spoolPower;
         double rackPower;
 
@@ -46,15 +47,19 @@ public class TeleOpMode extends LinearOpMode {
                 hardware.rackSpoolSpeedToggle();
             }
         };
-        ControllerCommand driveSpeedSlow = new ControllerCommand(ControllerCommand.actionable.onRelease) {
+        ControllerCommand increaseDriveSpeed = new ControllerCommand(ControllerCommand.actionable.onPress) {
             @Override
             public void defineOperation() {
-                movementSpeed = fastMovementSpeed;
+                movementSpeed += 0.2;
+                if (movementSpeed > 1)
+                    movementSpeed = 1;
             }
         };
-        ControllerCommand driveSpeedFast = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        ControllerCommand decreaseDriveSpeed = new ControllerCommand(ControllerCommand.actionable.onPress) {
             public void defineOperation() {
-                movementSpeed = slowMovementSpeed;
+                movementSpeed -= 0.2;
+                if (movementSpeed < 0.2)
+                    movementSpeed = 0.2;
             }
         };
 
@@ -66,6 +71,15 @@ public class TeleOpMode extends LinearOpMode {
         //looping condition.. while teleop mode is active.. obvious
         while (opModeIsActive()) {
             getRuntime();
+
+            clampCommand.operate(gamepad1.b);
+            hookCommand.operate(gamepad1.y);
+            rackSpoolSpeedToggleCommand.operate(gamepad1.x);
+            compactClampCommand.operate(gamepad1.a);
+
+            decreaseDriveSpeed.operate(gamepad1.dpad_down);
+            increaseDriveSpeed.operate(gamepad1.dpad_up);
+
             double ly = gamepad1.left_stick_y, lx = gamepad1.left_stick_x, rx = gamepad1.right_stick_x, ry = gamepad1.right_stick_y;
             telemetry.addData("Joysticks","Left: ("+lx+", "+ly+") Right: ("+rx+", "+ry+")");
             hardware.strafe(ly,-lx,rx,movementSpeed);
@@ -80,27 +94,14 @@ public class TeleOpMode extends LinearOpMode {
             hardware.driveRack(rackPower);
             hardware.driveSpool(spoolPower);
             telemetry.addData("Rack Power",rackPower);
-            telemetry.addData("Color data","rgb("+hardware.getRed()+","+hardware.getGreen()+","+hardware.getBlue()+")");
-            telemetry.addData("Distance",hardware.getDistance()+"");
 
-            telemetry.addData("Skystone", hardware.nextToSkystone());
-            telemetry.addData("chance",hardware.chanceNextToSkystone());
-            telemetry.addData("Angle ", hardware.getAngle());
-            telemetry.addData("Acceleration X ", hardware.getAccelerationX());
-            telemetry.addData("Acceleration Y ", hardware.getAccelerationY());
-            telemetry.addData("Acceleration Z ", hardware.getAccelerationZ());
-            telemetry.addData("blue ratio",hardware.blueRatio());
-            telemetry.addData("red ratio",hardware.redRatio());
-            telemetry.addData("stage", RobotHardware.clamp);
+            telemetry.addData("Speed",movementSpeed);
+
             long now = System.currentTimeMillis();
             telemetry.addData("DT (ms)",now-last);
             last = now;
-            clampCommand.operate(gamepad1.b);
-            hookCommand.operate(gamepad1.y);
-            rackSpoolSpeedToggleCommand.operate(gamepad1.x);
-            compactClampCommand.operate(gamepad1.a);
-            driveSpeedSlow.operate(gamepad1.left_stick_button);
-            driveSpeedFast.operate(gamepad1.left_stick_button);
+            telemetry.addData("Angle", this.hardware.getAngle());
+
 
             telemetry.update();
         }
