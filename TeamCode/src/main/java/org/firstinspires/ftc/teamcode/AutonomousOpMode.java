@@ -18,7 +18,7 @@ public class AutonomousOpMode extends LinearOpMode {
 
     private OperationQueue opQueue;
     private int opInt;
-    float delayTime = 1.0f;
+    float delayTime = 0.0f;
 
     ControllerCommand delayIncrement = new ControllerCommand(ControllerCommand.actionable.onPress) {
         @Override
@@ -44,6 +44,23 @@ public class AutonomousOpMode extends LinearOpMode {
         @Override
         public void defineOperation() {opInt = AutonomousQueues.RED_STONES_INT;}
     };
+    ControllerCommand forwardLeft = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {opInt = AutonomousQueues.FORWARD_LEFT_INT;}
+    };
+    ControllerCommand forwardRight = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {opInt = AutonomousQueues.FORWARD_RIGHT_INT;}
+    };
+    ControllerCommand left = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {opInt = AutonomousQueues.LEFT_INT;}
+    };
+    ControllerCommand right = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {opInt = AutonomousQueues.RIGHT_INT;}
+    };
+
     public void runOpMode() {
         robot = new RobotHardware();
         robot.init(this.hardwareMap);
@@ -75,6 +92,18 @@ public class AutonomousOpMode extends LinearOpMode {
                     break;
                 case AutonomousQueues.RED_STONES_INT:
                     pos = "RED STONES";
+                    break;
+                case AutonomousQueues.FORWARD_LEFT_INT:
+                    pos = "BLUE STONES PARKING SKYBRIDGE SIDE";
+                    break;
+                case AutonomousQueues.FORWARD_RIGHT_INT:
+                    pos = "RED STONES PARKING SKYBRIDGE SIDE";
+                    break;
+                case AutonomousQueues.LEFT_INT:
+                    pos = "PARKING WALL SIDE BY MOVING LEFT";
+                    break;
+                case AutonomousQueues.RIGHT_INT:
+                    pos = "PARKING WALL SIDE BY MOVING RIGHT";
                     break;
             }
 
@@ -110,6 +139,18 @@ public class AutonomousOpMode extends LinearOpMode {
             case AutonomousQueues.RED_STONES_INT:
                 opQueue = AutonomousQueues.START_RED_STONES;
                 robot.setSide(RobotHardware.Side.RED);
+                break;
+            case AutonomousQueues.FORWARD_LEFT_INT:
+                opQueue = AutonomousQueues.FORWARD_LEFT;
+                break;
+            case AutonomousQueues.FORWARD_RIGHT_INT:
+                opQueue = AutonomousQueues.FORWARD_RIGHT;
+                break;
+            case AutonomousQueues.LEFT_INT:
+                opQueue = AutonomousQueues.LEFT;
+                break;
+            case AutonomousQueues.RIGHT_INT:
+                opQueue = AutonomousQueues.RIGHT;
                 break;
         }
 

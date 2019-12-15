@@ -32,6 +32,7 @@ public class RobotHardware {
     private DistanceSensor frontRightDistanceSensor;
     private ColorSensor bottomColorSensor;
     private DistanceSensor bottomDistanceSensor;
+    //private DistanceSensor backDistanceSensor;
 
     BNO055IMU imu;
     Orientation lastAngles = new Orientation();
@@ -116,6 +117,8 @@ public class RobotHardware {
             bottomColorSensor = hMap.get(ColorSensor.class,"bottom_color_sensor");
             bottomDistanceSensor = hMap.get(DistanceSensor.class,"bottom_color_sensor");
 
+            //backDistanceSensor = hMap.get(DistanceSensor.class, "back_distance_sensor");
+
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
             parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
             parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -138,8 +141,8 @@ public class RobotHardware {
 
             leftHook = hMap.get(Servo.class,"left_hook");
             rightHook = hMap.get(Servo.class,"right_hook");
-            leftHook.setPosition(0.5);
-            rightHook.setPosition(0.5);
+            leftHook.setPosition(leftHookOpenPosition);
+            rightHook.setPosition(rightHookOpenPosition);
         } catch (NullPointerException e) {
             //drives couldn't initialize.. let the program run anyway
         }
@@ -169,6 +172,11 @@ public class RobotHardware {
             return -1;
         return getFrontSensor().blue();
     }
+
+    //TODO
+    //public double getBackDistance()    {
+    //    return backDistanceSensor.getDistance(DistanceUnit.CM);
+    //}
 
     double skystoneThreshold = 1.5;
     public double chanceNextToSkystone() {
