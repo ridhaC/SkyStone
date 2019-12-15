@@ -15,13 +15,94 @@ public class TeleOpMode extends LinearOpMode {
     }
 
     private double movementSpeed = 0.6;
+    private boolean dpadType = false;
+
+    ControllerCommand dpadTypeCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {
+            dpadType=!dpadType;
+        }
+    };
+    ControllerCommand dpadMoveRightCommand = new ControllerCommand(ControllerCommand.actionable.whileDown) {
+        @Override
+        public void defineOperation() {
+            hardware.driveRight(0.5);
+        }
+    };
+
+    ControllerCommand dpadMoveLeftCommand = new ControllerCommand(ControllerCommand.actionable.whileDown) {
+        @Override
+        public void defineOperation() {
+            hardware.driveLeft(0.5);
+        }
+    };
+    ControllerCommand dpadMoveForwardCommand = new ControllerCommand(ControllerCommand.actionable.whileDown) {
+        @Override
+        public void defineOperation() {
+            hardware.driveForward(0.5);
+        }
+    };
+    ControllerCommand dpadMoveBackwardCommand = new ControllerCommand(ControllerCommand.actionable.whileDown) {
+        @Override
+        public void defineOperation() {
+            hardware.driveBackward(0.5);
+        }
+    };
+    ControllerCommand clampCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {
+            hardware.toggleClamp();
+        }
+    };
+    ControllerCommand hookCommand = new ControllerCommand(ControllerCommand.actionable.onRelease) {
+        @Override
+        public void defineOperation() {
+            hardware.toggleHook();
+        }
+    };
+    ControllerCommand rackSpoolSpeedToggleCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {
+            hardware.rackSpoolSpeedToggle();
+        }
+    };
+    ControllerCommand increaseDriveSpeed = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {
+            movementSpeed += 0.2;
+            if (movementSpeed > 1)
+                movementSpeed = 1;
+        }
+    };
+    ControllerCommand decreaseDriveSpeed = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        public void defineOperation() {
+            movementSpeed -= 0.2;
+            if (movementSpeed < 0.2)
+                movementSpeed = 0.2;
+        }
+    };
+
+    ControllerCommand compactClampCommand= new ControllerCommand(ControllerCommand.actionable.onPress) {
+        public void defineOperation() {hardware.initialClamps();}
+    };
 
     @Override
     public void runOpMode() {
+
         hardware = new RobotHardware();
         hardware.init(this.hardwareMap);
 
         telemetry.addData("Status","Initialized");
+        telemetry.update();
+
+        while (!gamepad1.back) {
+            dpadTypeCommand.operate(gamepad1.start);
+            telemetry.addData("Hit back to start","");
+            telemetry.addData("Is Ryan's?", !dpadType);
+            telemetry.update();
+        }
+
+        telemetry.addData("READY","");
         telemetry.update();
 
         waitForStart();
@@ -29,46 +110,9 @@ public class TeleOpMode extends LinearOpMode {
         double spoolPower;
         double rackPower;
 
-        ControllerCommand clampCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
-            @Override
-            public void defineOperation() {
-                hardware.toggleClamp();
-            }
-        };
-        ControllerCommand hookCommand = new ControllerCommand(ControllerCommand.actionable.onRelease) {
-            @Override
-            public void defineOperation() {
-                hardware.toggleHook();
-            }
-        };
-        ControllerCommand rackSpoolSpeedToggleCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
-            @Override
-            public void defineOperation() {
-                hardware.rackSpoolSpeedToggle();
-            }
-        };
-        ControllerCommand increaseDriveSpeed = new ControllerCommand(ControllerCommand.actionable.onPress) {
-            @Override
-            public void defineOperation() {
-                movementSpeed += 0.2;
-                if (movementSpeed > 1)
-                    movementSpeed = 1;
-            }
-        };
-        ControllerCommand decreaseDriveSpeed = new ControllerCommand(ControllerCommand.actionable.onPress) {
-            public void defineOperation() {
-                movementSpeed -= 0.2;
-                if (movementSpeed < 0.2)
-                    movementSpeed = 0.2;
-            }
-        };
-
-        ControllerCommand compactClampCommand= new ControllerCommand(ControllerCommand.actionable.onPress) {
-            public void defineOperation() {hardware.initialClamps();}
-        };
 
         long last = System.currentTimeMillis();
-        //looping condition.. while teleop mode is active.. obvious
+            //looping condition.. while teleop mode is active.. obvious
         while (opModeIsActive()) {
             getRuntime();
 
@@ -77,9 +121,16 @@ public class TeleOpMode extends LinearOpMode {
             rackSpoolSpeedToggleCommand.operate(gamepad1.x);
             compactClampCommand.operate(gamepad1.a);
 
-            decreaseDriveSpeed.operate(gamepad1.dpad_down);
-            increaseDriveSpeed.operate(gamepad1.dpad_up);
-
+            if(dpadType) {
+                decreaseDriveSpeed.operate(gamepad1.dpad_down);
+                increaseDriveSpeed.operate(gamepad1.dpad_up);
+            }
+            else    {
+                dpadMoveBackwardCommand.operate(gamepad1.dpad_down);
+                dpadMoveForwardCommand.operate(gamepad1.dpad_up);
+                dpadMoveLeftCommand.operate(gamepad1.dpad_left);
+                dpadMoveRightCommand.operate(gamepad1.dpad_right);
+            }
             double ly = gamepad1.left_stick_y, lx = gamepad1.left_stick_x, rx = gamepad1.right_stick_x, ry = gamepad1.right_stick_y;
             telemetry.addData("Joysticks","Left: ("+lx+", "+ly+") Right: ("+rx+", "+ry+")");
             hardware.strafe(ly,-lx,rx,movementSpeed);

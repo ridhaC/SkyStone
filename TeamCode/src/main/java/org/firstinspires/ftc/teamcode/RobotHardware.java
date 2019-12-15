@@ -48,7 +48,7 @@ public class RobotHardware {
     private Servo insideClampServo;
     private Servo outsideClampServo;
     double outsideClampStartingPosition = 0.05;
-    double insideClampStartingPosition = 0.52;
+    double insideClampStartingPosition = 0.57;
     double outsideClampClosedPosition = 0.0;
     double insideClampClosedPosition = 1.0;
     double outsideClampOpenPosition = 0.5;
