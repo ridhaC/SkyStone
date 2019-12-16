@@ -14,7 +14,7 @@ public class TeleOpMode extends LinearOpMode {
 
     }
 
-    private double movementSpeed = 0.6;
+    private double movementSpeed = 0.8;
     private boolean dpadType = false;
 
     ControllerCommand dpadTypeCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
@@ -82,6 +82,13 @@ public class TeleOpMode extends LinearOpMode {
         }
     };
 
+    ControllerCommand openServos = new ControllerCommand(ControllerCommand.actionable.onPress) {
+        @Override
+        public void defineOperation() {
+            hardware.fullOpenClamp();
+        }
+    };
+
     ControllerCommand compactClampCommand= new ControllerCommand(ControllerCommand.actionable.onPress) {
         public void defineOperation() {hardware.initialClamps();}
     };
@@ -94,13 +101,6 @@ public class TeleOpMode extends LinearOpMode {
 
         telemetry.addData("Status","Initialized");
         telemetry.update();
-
-        while (!gamepad1.back) {
-            dpadTypeCommand.operate(gamepad1.start);
-            telemetry.addData("Hit back to start","");
-            telemetry.addData("Is Ryan's?", !dpadType);
-            telemetry.update();
-        }
 
         telemetry.addData("READY","");
         telemetry.update();
@@ -121,16 +121,10 @@ public class TeleOpMode extends LinearOpMode {
             rackSpoolSpeedToggleCommand.operate(gamepad1.x);
             compactClampCommand.operate(gamepad1.a);
 
-            if(dpadType) {
-                decreaseDriveSpeed.operate(gamepad1.dpad_down);
-                increaseDriveSpeed.operate(gamepad1.dpad_up);
-            }
-            else    {
-                dpadMoveBackwardCommand.operate(gamepad1.dpad_down);
-                dpadMoveForwardCommand.operate(gamepad1.dpad_up);
-                dpadMoveLeftCommand.operate(gamepad1.dpad_left);
-                dpadMoveRightCommand.operate(gamepad1.dpad_right);
-            }
+            this.openServos.operate(gamepad1.back);
+            decreaseDriveSpeed.operate(gamepad1.dpad_down);
+            increaseDriveSpeed.operate(gamepad1.dpad_up);
+
             double ly = gamepad1.left_stick_y, lx = gamepad1.left_stick_x, rx = gamepad1.right_stick_x, ry = gamepad1.right_stick_y;
             telemetry.addData("Joysticks","Left: ("+lx+", "+ly+") Right: ("+rx+", "+ry+")");
             hardware.strafe(ly,-lx,rx,movementSpeed);

@@ -69,90 +69,95 @@ public class AutonomousOpMode extends LinearOpMode {
         
         telemetry.addData("Status","Initialized");
         telemetry.update();
-
-        String pos = "BLUE FOUNDATION";
-
-        while (!gamepad1.back) {
-            blueFoundation.operate(gamepad1.y);
-            blueStones.operate(gamepad1.b);
-            redFoundation.operate(gamepad1.a);
-            redStones.operate(gamepad1.x);
-            delayDecrement.operate(gamepad1.dpad_down);
-            delayIncrement.operate(gamepad1.dpad_up);
-
-            switch (opInt) {
-                case AutonomousQueues.BLUE_FOUNDATION_INT:
-                    pos = "BLUE FOUNDATION";
-                    break;
-                case AutonomousQueues.RED_FOUNDATION_INT:
-                    pos = "RED FOUNDATION";
-                    break;
-                case AutonomousQueues.BLUE_STONES_INT:
-                    pos = "BLUE STONES";
-                    break;
-                case AutonomousQueues.RED_STONES_INT:
-                    pos = "RED STONES";
-                    break;
-                case AutonomousQueues.FORWARD_LEFT_INT:
-                    pos = "BLUE STONES PARKING SKYBRIDGE SIDE";
-                    break;
-                case AutonomousQueues.FORWARD_RIGHT_INT:
-                    pos = "RED STONES PARKING SKYBRIDGE SIDE";
-                    break;
-                case AutonomousQueues.LEFT_INT:
-                    pos = "PARKING WALL SIDE BY MOVING LEFT";
-                    break;
-                case AutonomousQueues.RIGHT_INT:
-                    pos = "PARKING WALL SIDE BY MOVING RIGHT";
-                    break;
-            }
-
-            telemetry.addData("Position",pos);
-
-            telemetry.addData("Delay", delayTime);
-
-            telemetry.addData("PRESS 'BACK' TO READY UP","");
-
-            telemetry.update();
-        }
-
-        telemetry.addData("READY FOR START","");
-        telemetry.addData("Position",pos);
-
-        telemetry.update();
-
-        AutonomousQueues.initiate(robot, delayTime);
-
-        switch(opInt)   {
-            case AutonomousQueues.BLUE_FOUNDATION_INT:
-                opQueue = AutonomousQueues.START_BLUE_FOUNDATION;
-                robot.setSide(RobotHardware.Side.BLUE);
-                break;
-            case AutonomousQueues.BLUE_STONES_INT:
-                opQueue = AutonomousQueues.START_BLUE_STONES;
-                robot.setSide(RobotHardware.Side.BLUE);
-                break;
-            case AutonomousQueues.RED_FOUNDATION_INT:
-                opQueue = AutonomousQueues.START_RED_FOUNDATION;
-                robot.setSide(RobotHardware.Side.RED);
-                break;
-            case AutonomousQueues.RED_STONES_INT:
-                opQueue = AutonomousQueues.START_RED_STONES;
-                robot.setSide(RobotHardware.Side.RED);
-                break;
-            case AutonomousQueues.FORWARD_LEFT_INT:
-                opQueue = AutonomousQueues.FORWARD_LEFT;
-                break;
-            case AutonomousQueues.FORWARD_RIGHT_INT:
-                opQueue = AutonomousQueues.FORWARD_RIGHT;
-                break;
-            case AutonomousQueues.LEFT_INT:
-                opQueue = AutonomousQueues.LEFT;
-                break;
-            case AutonomousQueues.RIGHT_INT:
-                opQueue = AutonomousQueues.RIGHT;
-                break;
-        }
+//
+//        String pos = "BLUE FOUNDATION";
+//
+//        while (!gamepad1.back) {
+//            blueFoundation.operate(gamepad1.y);
+//            blueStones.operate(gamepad1.b);
+//            redFoundation.operate(gamepad1.a);
+//            redStones.operate(gamepad1.x);
+//            forwardLeft.operate(gamepad1.dpad_up);
+//            forwardRight.operate(gamepad1.dpad_down);
+//            left.operate(gamepad1.dpad_left);
+//            right.operate(gamepad1.dpad_right);
+//
+//            delayDecrement.operate(gamepad1.dpad_down);
+//            delayIncrement.operate(gamepad1.dpad_up);
+//
+//            switch (opInt) {
+//                case AutonomousQueues.BLUE_FOUNDATION_INT:
+//                    pos = "BLUE FOUNDATION";
+//                    break;
+//                case AutonomousQueues.RED_FOUNDATION_INT:
+//                    pos = "RED FOUNDATION";
+//                    break;
+//                case AutonomousQueues.BLUE_STONES_INT:
+//                    pos = "BLUE STONES";
+//                    break;
+//                case AutonomousQueues.RED_STONES_INT:
+//                    pos = "RED STONES";
+//                    break;
+//                case AutonomousQueues.FORWARD_LEFT_INT:
+//                    pos = "BLUE STONES PARKING SKYBRIDGE SIDE";
+//                    break;
+//                case AutonomousQueues.FORWARD_RIGHT_INT:
+//                    pos = "RED STONES PARKING SKYBRIDGE SIDE";
+//                    break;
+//                case AutonomousQueues.LEFT_INT:
+//                    pos = "PARKING WALL SIDE BY MOVING LEFT";
+//                    break;
+//                case AutonomousQueues.RIGHT_INT:
+//                    pos = "PARKING WALL SIDE BY MOVING RIGHT";
+//                    break;
+//            }
+//
+//            telemetry.addData("Position",pos);
+//
+//            telemetry.addData("Delay", delayTime);
+//
+//            telemetry.addData("PRESS 'BACK' TO READY UP","");
+//
+//            telemetry.update();
+//        }
+//
+//        telemetry.addData("READY FOR START","");
+//        telemetry.addData("Position",pos);
+//
+//        telemetry.update();
+//
+//        AutonomousQueues.initiate(robot, delayTime);
+//
+//        switch(opInt)   {
+//            case AutonomousQueues.BLUE_FOUNDATION_INT:
+//                opQueue = AutonomousQueues.START_BLUE_FOUNDATION;
+//                robot.setSide(RobotHardware.Side.BLUE);
+//                break;
+//            case AutonomousQueues.BLUE_STONES_INT:
+//                opQueue = AutonomousQueues.START_BLUE_STONES;
+//                robot.setSide(RobotHardware.Side.BLUE);
+//                break;
+//            case AutonomousQueues.RED_FOUNDATION_INT:
+//                opQueue = AutonomousQueues.START_RED_FOUNDATION;
+//                robot.setSide(RobotHardware.Side.RED);
+//                break;
+//            case AutonomousQueues.RED_STONES_INT:
+//                opQueue = AutonomousQueues.START_RED_STONES;
+//                robot.setSide(RobotHardware.Side.RED);
+//                break;
+//            case AutonomousQueues.FORWARD_LEFT_INT:
+//                opQueue = AutonomousQueues.FORWARD_LEFT;
+//                break;
+//            case AutonomousQueues.FORWARD_RIGHT_INT:
+//                opQueue = AutonomousQueues.FORWARD_RIGHT;
+//                break;
+//            case AutonomousQueues.LEFT_INT:
+//                opQueue = AutonomousQueues.LEFT;
+//                break;
+//            case AutonomousQueues.RIGHT_INT:
+//                opQueue = AutonomousQueues.RIGHT;
+//                break;
+//        }
 
         waitForStart();
         while (opModeIsActive()) {

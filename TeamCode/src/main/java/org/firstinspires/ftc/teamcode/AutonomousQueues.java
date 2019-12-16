@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class AutonomousQueues {
     public static final int BLUE_STONES_INT = 0, RED_STONES_INT = 1, BLUE_FOUNDATION_INT = 2, RED_FOUNDATION_INT = 3, FORWARD_LEFT_INT = 4, FORWARD_RIGHT_INT = 5, LEFT_INT = 6, RIGHT_INT = 7;
-    public static OperationQueue START_BLUE_STONES, START_RED_STONES, START_BLUE_FOUNDATION, START_RED_FOUNDATION;
+    public static OperationQueue START_BLUE_STONES, START_RED_STONES, START_BLUE_FOUNDATION, START_RED_FOUNDATION, START_RED_PARK;
     public static OperationQueue FORWARD_LEFT, FORWARD_RIGHT, LEFT, RIGHT;
     /**
      * This should be called at the beginning of the AutonomousOpMode
@@ -25,6 +27,11 @@ public class AutonomousQueues {
         START_RED_STONES = new OperationQueue(robot);
         START_BLUE_FOUNDATION = new OperationQueue(robot);
         START_RED_FOUNDATION = new OperationQueue(robot);
+        START_RED_PARK = new OperationQueue(robot);
+        FORWARD_LEFT = new OperationQueue(robot);
+        FORWARD_RIGHT = new OperationQueue(robot);
+        LEFT  = new OperationQueue(robot);
+        RIGHT = new OperationQueue(robot);
 
         List<Operation> deployClamp = new ArrayList<Operation>();
         deployClamp.add(new Operation("lift rack a little",0.4f){
@@ -79,7 +86,7 @@ public class AutonomousQueues {
                 return !this.getRobot().nextToSkystone();
             }
         });
-        ops.add(new Operation("realign with stones", 1.5f)    {
+        ops.add(new Operation("realign with stones", 0.875f)    {
             public boolean defineOperation()    {
                 this.getRobot().driveRight(0.3);
                 this.getRobot().frontRightColorSensor.enableLed(false);
@@ -93,7 +100,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("move back", 0.5f) {
+        ops.add(new Operation("move back", 0.35f) {
             public boolean defineOperation() {
                 this.getRobot().driveBackward(0.25);
                 return true;
@@ -159,9 +166,14 @@ public class AutonomousQueues {
         });
         ops.add(new Operation("line up with stones") {
             public boolean defineOperation() {
-                this.getRobot().driveForward(0.15);
-                this.getRobot().frontRightColorSensor.enableLed(true);
-                return this.getRobot().getDistance()>3.8;
+                this.getRobot().driveForward(0.15 );
+                return this.getRobot().frontRightDistanceSensor.getDistance(DistanceUnit.CM)>3.95;
+            }
+        });
+        ops.add(new Operation("move right",1.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveRight(0.3);
+                return true;
             }
         });
         ops.add(new Operation("search for stones", 3.4f) {
@@ -184,7 +196,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("move back", 0.4f) {
+        ops.add(new Operation("move back", 0.45f) {
             public boolean defineOperation() {
                 this.getRobot().driveBackward(0.25);
                 return true;
@@ -241,7 +253,13 @@ public class AutonomousQueues {
         /*
           Implementation for start position at the blue foundation
          */
-        ops.add(new Operation("moving forward to site",1.25f) {
+        ops.add(new Operation("move a lil",1.3f) {
+            public boolean defineOperation() {
+                this.getRobot().driveRight(0.4);
+                return true;
+            }
+        });
+        ops.add(new Operation("moving forward to site",1.45f) {
             public boolean defineOperation() {
                 getRobot().driveBackward(0.4);
                 return true;
@@ -258,17 +276,29 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("driving back",1.35f) {
-            public boolean defineOperation() {
-                getRobot().driveForward(0.40);
-                return true;
-            }
-        });
         ops.add(new Operation("turn",10.0f) {
            public boolean defineOperation() {
                this.getRobot().turnLeft(0.4);
-               return this.getRobot().getAngle() < 85;
+               return this.getRobot().getAngle() < 20;
            }
+        });
+        ops.add(new Operation("go back",3.0f) {
+           public boolean defineOperation() {
+               this.getRobot().driveForward(0.3);
+               return true;
+           }
+        });
+        ops.add(new Operation("turn",10.0f) {
+            public boolean defineOperation() {
+                this.getRobot().turnLeft(0.4);
+                return this.getRobot().getAngle() < 85;
+            }
+        });
+        ops.add(new Operation("push into thing",3.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveBackward(0.3);
+                return true;
+            }
         });
         ops.add(new Operation("raising hook",1.0f) {
             public boolean defineOperation() {
@@ -289,7 +319,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("stop at blue line",1.5f) {
+        ops.add(new Operation("stop at blue line",5f) {
             public boolean defineOperation() {
                 getRobot().driveForward(0.2);
                 return !this.getRobot().overBlueStripe();
@@ -308,6 +338,12 @@ public class AutonomousQueues {
         /*
          Implementation for start position at the red foundation
          */
+        ops.add(new Operation("move a lil",1.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveLeft(0.4);
+                return true;
+            }
+        });
         ops.add(new Operation("moving forward to site",1.25f) {
             public boolean defineOperation() {
                 getRobot().driveBackward(0.4);
@@ -325,9 +361,15 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("driving back",1.35f) {
+        ops.add(new Operation("turn",10.0f) {
             public boolean defineOperation() {
-                getRobot().driveForward(0.40);
+                this.getRobot().turnRight(0.4);
+                return this.getRobot().getAngle() > -20;
+            }
+        });
+        ops.add(new Operation("go back",3.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveForward(0.3);
                 return true;
             }
         });
@@ -335,6 +377,12 @@ public class AutonomousQueues {
             public boolean defineOperation() {
                 this.getRobot().turnRight(0.4);
                 return this.getRobot().getAngle() > -85;
+            }
+        });
+        ops.add(new Operation("push into thing",3.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveBackward(0.3);
+                return true;
             }
         });
         ops.add(new Operation("raising hook",1.0f) {
@@ -356,7 +404,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("stop at red line",1.5f) {
+        ops.add(new Operation("stop at red line",5f) {
             public boolean defineOperation() {
                 getRobot().driveForward(0.2);
                 return !this.getRobot().overRedStripe();
@@ -442,5 +490,23 @@ public class AutonomousQueues {
         });
         LEFT.add(allStartingOps);
         LEFT.add(ops);
+
+        ops.clear();
+
+        ops.add(new Operation("wait",16.0f) {
+            public boolean defineOperation() {
+                return true;
+            }
+        });
+
+        ops.add(new Operation("move forward",5.0f) {
+            public boolean defineOperation() {
+                this.getRobot().driveForward(0.2);
+                return !this.getRobot().overRedStripe() || !this.getRobot().overBlueStripe();
+            }
+        });
+        START_RED_PARK.add(allStartingOps);
+        START_RED_PARK.add(deployClamp);
+        START_RED_PARK.add(ops);
     }
 }

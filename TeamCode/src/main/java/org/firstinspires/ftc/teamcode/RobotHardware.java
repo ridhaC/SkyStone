@@ -29,7 +29,7 @@ public class RobotHardware {
     private ColorSensor frontLeftColorSensor;
     private DistanceSensor frontLeftDistanceSensor;
     public ColorSensor frontRightColorSensor;
-    private DistanceSensor frontRightDistanceSensor;
+    public DistanceSensor frontRightDistanceSensor;
     private ColorSensor bottomColorSensor;
     private DistanceSensor bottomDistanceSensor;
     //private DistanceSensor backDistanceSensor;
@@ -149,6 +149,7 @@ public class RobotHardware {
     }
 
     private ColorSensor getFrontSensor() {
+//        return frontRightColorSensor;
         if (this.side == Side.BLUE)
             return frontRightColorSensor;
         else
@@ -495,6 +496,11 @@ public class RobotHardware {
     public void openClamp() {
         outsideClampServo.setPosition(outsideClampOpenPosition);
         insideClampServo.setPosition(insideClampOpenPosition);
+    }
+
+    public void fullOpenClamp() {
+        outsideClampServo.setPosition(outsideClampOpenPosition);
+        insideClampServo.setPosition(insideClampStartingPosition);
     }
 
     boolean hook = false;
