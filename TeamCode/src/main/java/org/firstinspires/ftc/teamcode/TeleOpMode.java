@@ -14,7 +14,7 @@ public class TeleOpMode extends LinearOpMode {
 
     }
 
-    private double movementSpeed = 0.8;
+    private double movementSpeed = 1.0;
     private boolean dpadType = false;
 
     ControllerCommand dpadTypeCommand = new ControllerCommand(ControllerCommand.actionable.onPress) {
@@ -131,9 +131,9 @@ public class TeleOpMode extends LinearOpMode {
             telemetry.addData("Power",hardware.getPowerString());
             rackPower = gamepad1.right_trigger - gamepad1.left_trigger;
             if(gamepad1.right_bumper)
-                spoolPower=-1;
-            else if (gamepad1.left_bumper)
                 spoolPower=1;
+            else if (gamepad1.left_bumper)
+                spoolPower=-1;
             else
                 spoolPower=0;
             hardware.driveRack(rackPower);

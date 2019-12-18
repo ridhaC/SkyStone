@@ -9,7 +9,7 @@ public class TurnOperation extends Operation {
         super(opName);
         this.targetAngle = targetAngle;
         this.power = power;
-        initialGap = this.getRobot().getAngle();
+        initialGap = Math.abs(this.getRobot().getAngle()-targetAngle);
     }
 
     public TurnOperation(String opName, float runtime, double targetAngle, double power) {
@@ -17,14 +17,18 @@ public class TurnOperation extends Operation {
         this.targetAngle = targetAngle;
         this.power = power;
     }
-
+    double turnPower = Math.abs(targetAngle - this.getRobot().getAngle())/initialGap;
     @Override
     public boolean defineOperation() {
+        if(Math.abs(targetAngle-this.getRobot().getAngle())>20)
+            turnPower = Math.abs(targetAngle - this.getRobot().getAngle())/initialGap;
+        else
+            turnPower = 0.2;
         if (targetAngle < this.getRobot().getAngle()) {
-            this.getRobot().driveRight(power);
+            this.getRobot().turnRight(turnPower);
             return withinTurnTarget();
         } else if (targetAngle > this.getRobot().getAngle()) {
-            this.getRobot().driveLeft(power);
+            this.getRobot().turnLeft(turnPower);
             return withinTurnTarget();
         } else
             return true;

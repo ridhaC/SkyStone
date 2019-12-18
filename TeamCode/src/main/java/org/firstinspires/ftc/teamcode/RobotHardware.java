@@ -7,10 +7,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 public class RobotHardware {
     //this is used for autonomous. not necessary in teleop
     public static enum Side {
-        BLUE,
-        RED
+        RIGHT,
+        LEFT
     }
-    private Side side = Side.BLUE;
+    private Side side = Side.RIGHT;
     public void setSide(Side side) {
         this.side = side;
     }
@@ -49,10 +49,10 @@ public class RobotHardware {
     private Servo insideClampServo;
     private Servo outsideClampServo;
     double outsideClampStartingPosition = 0.05;
-    double insideClampStartingPosition = 0.57;
+    double insideClampStartingPosition = 0.43;
     double outsideClampClosedPosition = 0.0;
     double insideClampClosedPosition = 1.0;
-    double outsideClampOpenPosition = 0.5;
+    double outsideClampOpenPosition = 0.7;
     double insideClampOpenPosition = 0.9;
 
     //foundation hook servos
@@ -141,16 +141,13 @@ public class RobotHardware {
 
             leftHook = hMap.get(Servo.class,"left_hook");
             rightHook = hMap.get(Servo.class,"right_hook");
-            leftHook.setPosition(leftHookOpenPosition);
-            rightHook.setPosition(rightHookOpenPosition);
         } catch (NullPointerException e) {
             //drives couldn't initialize.. let the program run anyway
         }
     }
 
     private ColorSensor getFrontSensor() {
-//        return frontRightColorSensor;
-        if (this.side == Side.BLUE)
+        if (this.side == Side.RIGHT)
             return frontRightColorSensor;
         else
             return frontLeftColorSensor;
@@ -179,7 +176,6 @@ public class RobotHardware {
     //    return backDistanceSensor.getDistance(DistanceUnit.CM);
     //}
 
-    double skystoneThreshold = 1.5;
     public double chanceNextToSkystone() {
         //scale the data according to what was used in the logistic regression
         double red = (getRed()-231.0)/398.0,
@@ -198,10 +194,18 @@ public class RobotHardware {
     public boolean nextToSkystone() {
         return chanceNextToSkystone() > 0.7;
     }
+    public boolean nextToSkystone(Side side) {
+        this.setSide(side);
+        if(side == Side.LEFT)
+            return chanceNextToSkystone() > 0.001;
+        else
+            return chanceNextToSkystone() > 0.7;
+    }
+
 
     public double getDistance() {
         DistanceSensor toUse = frontLeftDistanceSensor; //for the red side
-        if (this.side == Side.BLUE)
+        if (this.side == Side.RIGHT)
             toUse = frontRightDistanceSensor;
         if (toUse == null)
             return -1;

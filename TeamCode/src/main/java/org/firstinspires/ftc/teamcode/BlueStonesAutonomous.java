@@ -22,7 +22,7 @@ public class BlueStonesAutonomous extends LinearOpMode {
 
         AutonomousQueues.initiate(robot, delayTime);
 
-        robot.setSide(RobotHardware.Side.BLUE);
+        robot.setSide(RobotHardware.Side.RIGHT);
 
         opQueue = AutonomousQueues.START_BLUE_STONES;
 

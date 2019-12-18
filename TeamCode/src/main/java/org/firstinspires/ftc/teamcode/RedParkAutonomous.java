@@ -22,7 +22,7 @@ public class RedParkAutonomous extends LinearOpMode {
 
         AutonomousQueues.initiate(robot, delayTime);
 
-        robot.setSide(RobotHardware.Side.RED);
+        robot.setSide(RobotHardware.Side.LEFT);
 
         opQueue = AutonomousQueues.START_RED_PARK;
 

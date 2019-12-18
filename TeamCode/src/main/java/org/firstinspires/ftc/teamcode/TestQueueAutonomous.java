@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Red Stones",group="Linear Opmode")
-public class RedStonesAutonomous extends LinearOpMode {
+@Autonomous(name="Test Queue",group="Linear Opmode")
+public class TestQueueAutonomous extends LinearOpMode {
     private RobotHardware robot = new RobotHardware();
     private ElapsedTime elapsedTime = new ElapsedTime();
 
-    public RedStonesAutonomous() {
+    public TestQueueAutonomous() {
 
     }
 
@@ -22,9 +22,9 @@ public class RedStonesAutonomous extends LinearOpMode {
 
         AutonomousQueues.initiate(robot, delayTime);
 
-        robot.setSide(RobotHardware.Side.LEFT);
+        robot.setSide(RobotHardware.Side.RIGHT);
 
-        opQueue = AutonomousQueues.START_RED_STONES;
+        opQueue = AutonomousQueues.TEST_QUEUE;
 
         telemetry.addData("Status","Initialized");
         telemetry.update();

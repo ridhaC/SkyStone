@@ -105,8 +105,10 @@ public class ColorSensorTester extends LinearOpMode {
             telemetry.addData("green",hardware.getGreen());
             telemetry.addData("blue",hardware.getBlue());
             telemetry.addData("distance",hardware.getDistance());
+            telemetry.addData("Left SkyStone? ", hardware.nextToSkystone(RobotHardware.Side.LEFT));
             telemetry.addData("Confidence ", hardware.chanceNextToSkystone());
-            telemetry.addData("SkyStone? ", hardware.nextToSkystone());
+            telemetry.addData("Right SkyStone? ", hardware.nextToSkystone(RobotHardware.Side.RIGHT));
+            telemetry.addData("Confidence ", hardware.chanceNextToSkystone());
             telemetry.update();
         }
 
