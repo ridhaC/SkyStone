@@ -15,6 +15,10 @@ public class RobotHardware {
         this.side = side;
     }
 
+    public static final int LEFT_COLOR_SIDE = 0, RIGHT_COLOR_SIDE = 1;
+
+    private int skystonePosition = -1;
+
     //encourage data encapsulation
     //wheel motors
     private DcMotor frontLeftDrive;
@@ -146,29 +150,34 @@ public class RobotHardware {
         }
     }
 
-    private ColorSensor getFrontSensor() {
-        if (this.side == Side.RIGHT)
-            return frontRightColorSensor;
-        else
-            return frontLeftColorSensor;
+    public int getRed(int side) {
+        switch (side) {
+            case RIGHT_COLOR_SIDE:
+                return this.frontRightColorSensor.red();
+            case LEFT_COLOR_SIDE:
+                return this.frontLeftColorSensor.red();
+        }
+        return -1; //no valid side specified
     }
 
-    public int getRed() {
-        if (getFrontSensor() == null)
-            return -1;
-        return getFrontSensor().red();
+    public int getGreen(int side) {
+        switch (side) {
+            case RIGHT_COLOR_SIDE:
+                return this.frontRightColorSensor.green();
+            case LEFT_COLOR_SIDE:
+                return this.frontLeftColorSensor.green();
+        }
+        return -1; //no valid side specified
     }
 
-    public int getGreen() {
-        if (getFrontSensor() == null)
-            return -1;
-        return getFrontSensor().green();
-    }
-
-    public int getBlue() {
-        if (getFrontSensor() == null)
-            return -1;
-        return getFrontSensor().blue();
+    public int getBlue(int side) {
+        switch (side) {
+            case RIGHT_COLOR_SIDE:
+                return this.frontRightColorSensor.blue();
+            case LEFT_COLOR_SIDE:
+                return this.frontLeftColorSensor.blue();
+        }
+        return -1; //no valid side specified
     }
 
     //TODO
@@ -176,40 +185,68 @@ public class RobotHardware {
     //    return backDistanceSensor.getDistance(DistanceUnit.CM);
     //}
 
-    public double chanceNextToSkystone() {
-        //scale the data according to what was used in the logistic regression
-        double red = (getRed()-231.0)/398.0,
-               green = (getGreen()-364.791667)/745.0,
-               blue = (getBlue()-155.5)/393.0,
-               dist = (getDistance()-3.475)/1.5;
-        //apply the weights to get the predicted value
-        double value = 2.02173-38.9551*red+29.4573*green+43.8142*blue-5.1269*dist;
-        //apply the sigmoid function to determine chance of skystone
-        double e = Math.exp(-value);
-        double chance = 1/(1+e);
-        //if that chance is >0.5, we are more than likely next to a skystone
-        return chance;
+    /**
+     * Returns the chance that a specified color sensor is in front of a Skystone
+     * @param side The integer value of the side to check
+     * @return The confidence that the sensor is in front of a Skystone
+     */
+    public double chanceNextToSkystone(int side) {
+        double red, green, blue, dist, value, e, chance;
+        switch (side) {
+            case LEFT_COLOR_SIDE:
+                //scale the data according to what was used in the logistic regression
+                red = (getRed(side) - 231.0) / 398.0;
+                green = (getGreen(side) - 364.791667) / 745.0;
+                blue = (getBlue(side) - 155.5) / 393.0;
+                dist = (getDistance(side) - 3.475) / 1.5;
+                //apply the weights to get the predicted value
+                value = 2.02173 - 38.9551 * red + 29.4573 * green + 43.8142 * blue - 5.1269 * dist;
+                //apply the sigmoid function to determine chance of skystone
+                e = Math.exp(-value);
+                chance = 1 / (1 + e);
+                //if that chance is >0.5, we are more than likely next to a skystone
+                return chance;
+            case RIGHT_COLOR_SIDE:
+                //scale the data according to what was used in the logistic regression
+                red = (getRed(side) - 595.0) / 2826.0;
+                green = (getGreen(side) - 957.690) / 4270.0;
+                blue = (getBlue(side) - 337.172) / 1194.0;
+                dist = (getDistance(side) - 2.780) / 2.4;
+                //apply the weights to get the predicted value
+                value = -4.019 - 60.019 * red - 44.996 * green + 51.616 * blue - 5.26127 * dist;
+                //apply the sigmoid function to determine chance of skystone
+                e = Math.exp(-value);
+                chance = 1 / (1 + e);
+                //if that chance is >0.5, we are more than likely next to a skystone
+                return chance;
+        }
+        return 0.0f; //if no valid side given then 0% chance.
     }
 
-    public boolean nextToSkystone() {
-        return chanceNextToSkystone() > 0.7;
-    }
-    public boolean nextToSkystone(Side side) {
-        this.setSide(side);
-        if(side == Side.LEFT)
-            return chanceNextToSkystone() > 0.001;
-        else
-            return chanceNextToSkystone() > 0.7;
+    /**
+     * Uses the confidence value that the specified color sensor to determine if
+     * that side is in front of a Skystone.
+     * Uses a confidence threshold of at least 70% confidence.
+     * @param side
+     * @return True if next to SS, False if not.
+     */
+    public boolean nextToSkystone(int side) {
+        return chanceNextToSkystone(side) > 0.7;
     }
 
-
-    public double getDistance() {
-        DistanceSensor toUse = frontLeftDistanceSensor; //for the red side
-        if (this.side == Side.RIGHT)
-            toUse = frontRightDistanceSensor;
-        if (toUse == null)
+    public double getDistance(int side) {
+        DistanceSensor sensor = null;
+        switch (side) {
+            case LEFT_COLOR_SIDE:
+                sensor = frontLeftDistanceSensor;
+                break;
+            case RIGHT_COLOR_SIDE:
+                sensor = frontRightDistanceSensor;
+        }
+        if (sensor == null)
             return -1;
-        return toUse.getDistance(DistanceUnit.CM);
+        else
+            return sensor.getDistance(DistanceUnit.CM);
     }
 
     private int sum(ColorSensor cs) {
@@ -537,5 +574,13 @@ public class RobotHardware {
         this.stopWheels();
        // this.driveSpool(0);
        // this.driveRack(0);
+    }
+
+    public int getSkystonePosition() {
+        return this.skystonePosition;
+    }
+
+    public void setSkystonePosition(int skystonePosition) {
+        this.skystonePosition = skystonePosition;
     }
 }

@@ -12,7 +12,6 @@ public class AutonomousQueues {
     public static OperationQueue START_BLUE_STONES, START_RED_STONES, START_BLUE_FOUNDATION, START_RED_FOUNDATION, START_RED_PARK;
     public static OperationQueue FORWARD_LEFT, FORWARD_RIGHT, LEFT, RIGHT;
     public static OperationQueue TEST_QUEUE;
-    public static int firstStoneLocation = 2;
     /**
      * This should be called at the beginning of the AutonomousOpMode
      */
@@ -67,62 +66,45 @@ public class AutonomousQueues {
                 return true;
             }
         });
-
         List<Operation> ops = new ArrayList<Operation>();
         /*
           Implementation for start position at the blue stones
          */
-        /*ops.add(new Operation("get close to stones",1.0f) {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.3);
-                return true;
-            }
-        });*/
         ops.add(new Operation("line up with stones") {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.15);
-                return this.getRobot().getDistance()>3.7;
+                return this.getRobot().getDistance(RobotHardware.RIGHT_COLOR_SIDE)>3.7;
             }
         });
-        ops.add(new Operation("check if stone is one of the first two", 1.0f) {
+        ops.add(new Operation("check if stone is one of the first two", 1.5f) {
             @Override
             public boolean defineOperation() {
-                /*if(this.getRobot().nextToSkystone(RobotHardware.Side.RIGHT)) {
-                    AutonomousQueues.firstStoneLocation = 1;
-                }
-                else if(this.getRobot().nextToSkystone(RobotHardware.Side.LEFT)) {
-                    AutonomousQueues.firstStoneLocation = 0;
-                }
+                if(this.getRobot().nextToSkystone(RobotHardware.RIGHT_COLOR_SIDE))
+                    this.getRobot().setSkystonePosition(1);
+                else if(this.getRobot().nextToSkystone(RobotHardware.LEFT_COLOR_SIDE))
+                    this.getRobot().setSkystonePosition(0);
                 else
-                    AutonomousQueues.firstStoneLocation = 2;*/
-                AutonomousQueues.firstStoneLocation = 2;
+                    this.getRobot().setSkystonePosition(2);
                 return true;
             }
         });
-        if(firstStoneLocation == 0) {
-            ops.add(new Operation("align with stone", 1.0f) {
-                public boolean defineOperation() {
-                    this.getRobot().driveLeft(0.3);
-                    return true;
-                }
-            });
-        }
-        else if(firstStoneLocation == 1)    {
-            ops.add(new Operation("align with stone", 1.0f) {
-                public boolean defineOperation() {
-                    this.getRobot().driveRight(0.3);
-                    return true;
-                }
-            });
-        }
-        else    {
-            ops.add(new Operation("align with stone", 2.0f) {
-                public boolean defineOperation() {
-                    this.getRobot().driveRight(0.3);
-                    return true;
-                }
-            });
-        }
+        //add operations that correlate with where the stone is.
+        ops.add(new Operation("go to correct position", 1.0f) {
+           public boolean defineOperation() {
+               switch (this.getRobot().getSkystonePosition()) {
+                   case 0:
+                       this.getRobot().driveLeft(0.3);
+                       break;
+                   case 1:
+                       this.getRobot().driveRight(0.3);
+                       break;
+                   case 2:
+                       this.getRobot().driveRight(0.45);
+                       break;
+               }
+               return true;
+           }
+        });
         ops.add(new Operation("close clamp",0.5f){
             public boolean defineOperation() {
                 if (this.isFirstIteration())
@@ -139,7 +121,7 @@ public class AutonomousQueues {
         ops.add(new Operation("rotate",1.7f) {
             public boolean defineOperation() {
                 this.getRobot().turnLeft(0.5);
-                return this.getRobot().getAngle()<50;
+                return this.getRobot().getAngle()<70;
             }
         });
         ops.add(new Operation("rotate slower",1.7f) {
@@ -149,7 +131,7 @@ public class AutonomousQueues {
                 return this.getRobot().getAngle()<85;
             }
         });
-        ops.add(new Operation("get close to stripes",0.5f) {
+        ops.add(new Operation("get close to stripes",0.75f) {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.4);
                 return true;
@@ -167,7 +149,7 @@ public class AutonomousQueues {
                return true;
            }
         });
-        ops.add(new Operation("drop stone", 0.5f) {
+        ops.add(new Operation("drop stone", 0.25f) {
             public boolean defineOperation() {
                 if (this.isFirstIteration())
                     this.getRobot().openClamp();
@@ -180,7 +162,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        if(firstStoneLocation == 1) {
+        if(robot.getSkystonePosition() == 1) {
             ops.add(new Operation("return to stones position", 0.7f) {
                 public boolean defineOperation() {
                     this.getRobot().driveBackward(0.4);
@@ -211,7 +193,7 @@ public class AutonomousQueues {
         ops.add(new Operation("line up with stones") {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.15);
-                return this.getRobot().getDistance()>3.7;
+                return this.getRobot().getDistance(RobotHardware.RIGHT_COLOR_SIDE)>3.7;
             }
         });
         ops.add(new Operation("close clamp",0.5f){
@@ -279,92 +261,6 @@ public class AutonomousQueues {
         /*
           Implementation for start position at the red stones
          */
-        ops.add(new Operation("get close to stones",1.0f) {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.3);
-                return true;
-            }
-        });
-        ops.add(new Operation("line up with stones") {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.15 );
-                return this.getRobot().frontRightDistanceSensor.getDistance(DistanceUnit.CM)>3.95;
-            }
-        });
-        ops.add(new Operation("move right",1.0f) {
-            public boolean defineOperation() {
-                this.getRobot().driveRight(0.3);
-                return true;
-            }
-        });
-        ops.add(new Operation("search for stones", 3.4f) {
-            public boolean defineOperation() {
-                this.getRobot().driveLeft(0.3);
-                return !this.getRobot().nextToSkystone();
-            }
-        });
-        ops.add(new Operation("realign with stones", 1.0f)    {
-            public boolean defineOperation()    {
-                this.getRobot().driveLeft(0.3);
-                return true;
-            }
-        });
-        ops.add(new Operation("close clamp",0.5f){
-            public boolean defineOperation() {
-                if (this.isFirstIteration())
-                    this.getRobot().closeClamp();
-                return true;
-            }
-        });
-        ops.add(new Operation("move back", 0.45f) {
-            public boolean defineOperation() {
-                this.getRobot().driveBackward(0.25);
-                return true;
-            }
-        });
-        ops.add(new Operation("rotate",1.7f) {
-            public boolean defineOperation() {
-                this.getRobot().turnRight(0.5);
-                return this.getRobot().getAngle()>-60;
-            }
-        });
-        ops.add(new Operation("rotate slower",1.7f) {
-            public boolean defineOperation() {
-                this.getRobot().turnRight(0.3);
-                return this.getRobot().getAngle()>-85;
-            }
-        });
-        ops.add(new Operation("get close to stripes",2.0f) {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.4);
-                return true;
-            }
-        });
-        ops.add(new Operation("go to stripe", 3.0f)  {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.2);
-                return !this.getRobot().overRedStripe();
-            }
-        });
-        ops.add(new Operation("move into area", 0.9f) {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.4);
-                return true;
-            }
-        });
-        ops.add(new Operation("drop stone", 1.0f) {
-            public boolean defineOperation() {
-                if (this.isFirstIteration())
-                    this.getRobot().openClamp();
-                return true;
-            }
-        });
-        ops.add(new Operation("return to parking position", 0.7f) {
-            public boolean defineOperation() {
-                this.getRobot().driveBackward(0.4);
-                return true;
-            }
-        });
         START_RED_STONES.add(allStartingOps);
         START_RED_STONES.add(deployClamp);
         START_RED_STONES.add(ops);

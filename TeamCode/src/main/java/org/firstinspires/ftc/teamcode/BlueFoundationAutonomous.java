@@ -36,8 +36,10 @@ public class BlueFoundationAutonomous extends LinearOpMode {
             if (t)
                 msg = opQueue.getCurrentOperation().getName();
             telemetry.addData("Current Objective",msg);
-            telemetry.addData("ss chance",robot.chanceNextToSkystone());
-            telemetry.addData("skystone",robot.nextToSkystone());
+            telemetry.addData("left ss chance",robot.chanceNextToSkystone(RobotHardware.LEFT_COLOR_SIDE));
+            telemetry.addData("left skystone",robot.nextToSkystone(RobotHardware.LEFT_COLOR_SIDE));
+            telemetry.addData("right ss chance",robot.chanceNextToSkystone(RobotHardware.RIGHT_COLOR_SIDE));
+            telemetry.addData("right skystone",robot.nextToSkystone(RobotHardware.RIGHT_COLOR_SIDE));
             telemetry.addData("Angle ", robot.getAngle());
             telemetry.update();
         }
