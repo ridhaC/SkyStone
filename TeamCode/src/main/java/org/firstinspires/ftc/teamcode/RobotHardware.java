@@ -226,12 +226,12 @@ public class RobotHardware {
     /**
      * Uses the confidence value that the specified color sensor to determine if
      * that side is in front of a Skystone.
-     * Uses a confidence threshold of at least 70% confidence.
+     * Uses a confidence threshold of at least 50% confidence.
      * @param side
      * @return True if next to SS, False if not.
      */
     public boolean nextToSkystone(int side) {
-        return chanceNextToSkystone(side) > 0.7;
+        return chanceNextToSkystone(side) > 0.5;
     }
 
     public double getDistance(int side) {

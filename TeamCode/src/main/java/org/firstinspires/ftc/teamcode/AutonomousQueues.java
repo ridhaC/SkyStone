@@ -76,8 +76,7 @@ public class AutonomousQueues {
                 return this.getRobot().getDistance(RobotHardware.RIGHT_COLOR_SIDE)>3.7;
             }
         });
-        ops.add(new Operation("check if stone is one of the first two", 1.5f) {
-            @Override
+        ops.add(new Operation("check if stone is one of the first two") {
             public boolean defineOperation() {
                 if(this.getRobot().nextToSkystone(RobotHardware.RIGHT_COLOR_SIDE))
                     this.getRobot().setSkystonePosition(1);
@@ -85,10 +84,9 @@ public class AutonomousQueues {
                     this.getRobot().setSkystonePosition(0);
                 else
                     this.getRobot().setSkystonePosition(2);
-                return true;
+                return false; //runs once
             }
         });
-        //add operations that correlate with where the stone is.
         ops.add(new Operation("go to correct position", 1.0f) {
            public boolean defineOperation() {
                switch (this.getRobot().getSkystonePosition()) {
@@ -99,41 +97,40 @@ public class AutonomousQueues {
                        this.getRobot().driveRight(0.3);
                        break;
                    case 2:
-                       this.getRobot().driveRight(0.45);
+                       this.getRobot().driveRight(0.6);
                        break;
                }
                return true;
            }
         });
-        ops.add(new Operation("close clamp",0.5f){
+        ops.add(new Operation("close clamp",0.25f){
             public boolean defineOperation() {
                 if (this.isFirstIteration())
                     this.getRobot().closeClamp();
                 return true;
             }
         });
-        ops.add(new Operation("move back", 0.35f) {
+        ops.add(new Operation("move back", 0.25f) {
             public boolean defineOperation() {
-                this.getRobot().driveBackward(0.25);
+                this.getRobot().driveBackward(0.35);
                 return true;
             }
         });
         ops.add(new Operation("rotate",1.7f) {
             public boolean defineOperation() {
-                this.getRobot().turnLeft(0.5);
+                this.getRobot().turnLeft(0.6);
                 return this.getRobot().getAngle()<70;
             }
         });
         ops.add(new Operation("rotate slower",1.7f) {
             public boolean defineOperation() {
-                this.getRobot().turnLeft(0.25
-                );
+                this.getRobot().turnLeft(0.3);
                 return this.getRobot().getAngle()<85;
             }
         });
         ops.add(new Operation("get close to stripes",0.75f) {
             public boolean defineOperation() {
-                this.getRobot().driveForward(0.4);
+                this.getRobot().driveForward(0.5);
                 return true;
             }
         });
@@ -143,9 +140,9 @@ public class AutonomousQueues {
                 return !this.getRobot().overBlueStripe();
             }
         });
-        ops.add(new Operation("move into area", 0.6f) {
+        ops.add(new Operation("move into area", 0.3f) {
            public boolean defineOperation() {
-               this.getRobot().driveForward(0.4);
+               this.getRobot().driveForward(0.8);
                return true;
            }
         });
@@ -156,7 +153,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("return to stones position", 1.75f) {
+        ops.add(new Operation("return to stones position", 1.5f) {
              public boolean defineOperation() {
                  this.getRobot().driveBackward(0.5);
                 return true;
@@ -506,7 +503,6 @@ public class AutonomousQueues {
         });
         LEFT.add(allStartingOps);
         LEFT.add(ops);
-
         ops.clear();
 
         ops.add(new Operation("wait",16.0f) {
@@ -524,8 +520,10 @@ public class AutonomousQueues {
         START_RED_PARK.add(allStartingOps);
         START_RED_PARK.add(deployClamp);
         START_RED_PARK.add(ops);
+        ops.clear();
 
-        //ops.add(new TurnOperation("gyro turn", 90, 1.0));
+
+        ops.add(new TurnOperation("gyro turn", 90, 1.0));
         TEST_QUEUE.add(ops);
 
         ops.clear();
