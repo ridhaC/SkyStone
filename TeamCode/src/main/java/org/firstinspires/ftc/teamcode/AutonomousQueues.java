@@ -97,7 +97,7 @@ public class AutonomousQueues {
                        this.getRobot().driveRight(0.3);
                        break;
                    case 2:
-                       this.getRobot().driveRight(0.6);
+                       this.getRobot().driveRight(0.5);
                        break;
                }
                return true;
@@ -118,34 +118,24 @@ public class AutonomousQueues {
         });
         ops.add(new Operation("rotate",1.7f) {
             public boolean defineOperation() {
-                this.getRobot().turnLeft(0.6);
+                this.getRobot().turnLeft(0.4);
                 return this.getRobot().getAngle()<70;
             }
         });
         ops.add(new Operation("rotate slower",1.7f) {
             public boolean defineOperation() {
-                this.getRobot().turnLeft(0.3);
+                this.getRobot().turnLeft(0.2);
                 return this.getRobot().getAngle()<85;
             }
         });
-        ops.add(new Operation("get close to stripes",0.75f) {
-            public boolean defineOperation() {
-                this.getRobot().driveForward(0.5);
-                return true;
-            }
-        });
+        ops.add(new MoveOperation(MoveOperation.FORWARD,0.5,0.75f));
         ops.add(new Operation("go to stripe", 3.0f)  {
             public boolean defineOperation() {
                 this.getRobot().driveForward(0.2);
                 return !this.getRobot().overBlueStripe();
             }
         });
-        ops.add(new Operation("move into area", 0.3f) {
-           public boolean defineOperation() {
-               this.getRobot().driveForward(0.8);
-               return true;
-           }
-        });
+        ops.add(new MoveOperation(MoveOperation.FORWARD,0.8,0.3f));
         ops.add(new Operation("drop stone", 0.25f) {
             public boolean defineOperation() {
                 if (this.isFirstIteration())
@@ -153,28 +143,7 @@ public class AutonomousQueues {
                 return true;
             }
         });
-        ops.add(new Operation("return to stones position", 1.5f) {
-             public boolean defineOperation() {
-                 this.getRobot().driveBackward(0.5);
-                return true;
-            }
-        });
-        if(robot.getSkystonePosition() == 1) {
-            ops.add(new Operation("return to stones position", 0.7f) {
-                public boolean defineOperation() {
-                    this.getRobot().driveBackward(0.4);
-                    return true;
-                }
-            });
-        }
-        else    {
-            ops.add(new Operation("return to stones position", 0.45f) {
-                public boolean defineOperation() {
-                    this.getRobot().driveBackward(0.4);
-                    return true;
-                }
-            });
-        }
+        ops.add(new MoveOperation(MoveOperation.BACKWARD,0.5,1.5f));
         ops.add(new Operation("rotate",1.7f) {
             public boolean defineOperation() {
                 this.getRobot().turnRight(0.5);
@@ -523,7 +492,7 @@ public class AutonomousQueues {
         ops.clear();
 
 
-        ops.add(new TurnOperation("gyro turn", 90, 1.0));
+       //  ops.add(new TurnOperation("gyro turn", 90, 1.0));
         TEST_QUEUE.add(ops);
 
         ops.clear();
